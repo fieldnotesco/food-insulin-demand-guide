@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Food Insulin Demand Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #FBF6EC;
+    --paper-line: #E9DFCB;
+    --ink: #2B2A22;
+    --ink-soft: #6B6656;
+    --primary: #5F7A52;
+    --primary-tint: #E4EADD;
+    --amber: #C08A3E;
+    --amber-tint: #F5E9D4;
+    --rust: #B15A3C;
+    --rust-tint: #F3E1D8;
+    --card: #FFFDF8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Nunito Sans', sans-serif;
+    padding: 40px 20px 80px;
+    overflow-x: hidden;
+  }
+  .wrap{max-width: 980px; margin: 0 auto;}
+  header{margin-bottom: 36px;}
+  .eyebrow{
+    font-family:'Newsreader', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--primary);
+    margin-bottom: 10px;
+  }
+  h1{
+    font-family:'Newsreader', serif;
+    font-weight: 600;
+    font-size: clamp(32px, 5vw, 46px);
+    margin: 0 0 10px;
+    line-height: 1.08;
+  }
+  .sub{
+    color: var(--ink-soft);
+    max-width: 620px;
+    line-height: 1.5;
+    font-size: 15px;
+  }
+  .sub a{color:var(--primary);}
+  .grid{
+    display:grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 24px;
+    align-items:start;
+  }
+  @media (max-width: 820px){ .grid{grid-template-columns: 1fr;} }
+  .grid.guide-collapsed{ grid-template-columns: 1fr; }
+
+  .card{
+    background: var(--card);
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(90,74,44,0.07);
+  }
+  .card-header{
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--paper-line);
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    flex-wrap: wrap;
+  }
+  .card-title{
+    font-family:'Newsreader', serif;
+    font-size: 21px;
+    font-weight:500;
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+  .card-body{padding: 18px 22px 22px;}
+  .table-scroll{overflow-x:auto;}
+
+  input[type=text], input[type=number]{
+    font-family:'Nunito Sans', sans-serif;
+    font-size:14px;
+    border:1px solid var(--paper-line);
+    background:#fff;
+    border-radius:12px;
+    padding:9px 13px;
+    color:var(--ink);
+    width:100%;
+  }
+  input:focus{outline:2px solid var(--primary); outline-offset:1px;}
+
+  .search-row{margin-bottom:14px;}
+
+  .cat-pills{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;}
+  .pill{
+    font-family:'Nunito Sans', sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    border:none;
+    background:var(--card);
+    color: var(--ink-soft);
+    padding:6px 13px;
+    border-radius: 20px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .pill.active{
+    background: var(--primary);
+    color:#fff;
+  }
+
+  table{width:100%; border-collapse:collapse;}
+  thead th{
+    text-align:left;
+    font-family:'Nunito Sans', sans-serif;
+    font-size:11px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    font-weight:700;
+    padding: 6px 8px 10px;
+    border-bottom:1px solid var(--paper-line);
+  }
+  tbody tr{border-bottom:1px solid var(--paper-line);}
+  tbody tr:last-child{border-bottom:none;}
+  tbody td{padding: 12px 8px; vertical-align:middle;}
+  .food-name{font-weight:700;}
+  .qty{color:var(--ink-soft); font-size:12.5px; font-style:italic;}
+  .fid-cell{display:flex; align-items:center; gap:10px; min-width:140px;}
+  .fid-num{
+    font-family:'Newsreader', serif;
+    font-variant-numeric: tabular-nums;
+    font-size:17px;
+    font-weight:600;
+    width: 28px;
+    text-align:right;
+  }
+  .bar-track{flex:1; height:8px; background:#efe8d8; border-radius:20px; overflow:hidden;}
+  .bar-fill{height:100%; border-radius:20px;}
+  .fid-low .bar-fill{background:var(--primary);}
+  .fid-low .fid-num{color:var(--primary);}
+  .fid-mid .bar-fill{background:var(--amber);}
+  .fid-mid .fid-num{color:var(--amber);}
+  .fid-high .bar-fill{background:var(--rust);}
+  .fid-high .fid-num{color:var(--rust);}
+
+  .add-btn{
+    font-family:'Nunito Sans', sans-serif;
+    font-size:12px;
+    font-weight:700;
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    border-radius:20px;
+    padding:6px 14px;
+    cursor:pointer;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .add-btn:hover{background:#4d6743;}
+
+  .legend{
+    display:flex; gap:16px; font-size:12px; font-family:'Nunito Sans', sans-serif;
+    color:var(--ink-soft); margin-top:14px; flex-wrap:wrap;
+  }
+  .legend span{display:inline-flex; align-items:center; gap:5px;}
+  .dot{width:8px; height:8px; border-radius:50%; display:inline-block;}
+
+  .tally-list{list-style:none; margin:0 0 14px; padding:0; min-height: 20px;}
+  .tally-list li{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:9px 0; border-bottom:1px dashed var(--paper-line);
+    font-size:13.5px;
+  }
+  .tally-list li .l{color:var(--ink); font-weight:600;}
+  .tally-list li .q{color:var(--ink-soft); font-size:12px; font-style:italic;}
+  .tally-list li .r{display:flex; align-items:center; gap:10px;}
+  .remove-x{
+    cursor:pointer; color:var(--ink-soft); font-family:'Nunito Sans', sans-serif;
+    font-size:14px; border:none; background:none; padding:2px 4px;
+  }
+  .remove-x:hover{color:var(--rust);}
+  .empty-note{color:var(--ink-soft); font-size:13px; font-style:italic; padding: 10px 0;}
+
+  .tally-total{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding-top:12px; border-top:1px solid var(--ink);
+  }
+  .tally-total .label{font-family:'Nunito Sans', sans-serif; font-size:12px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft);}
+  .tally-total .num{font-family:'Newsreader', serif; font-size:34px; font-weight:600;}
+
+  .budget-row{margin-top:14px;}
+  .budget-row label{font-size:12px; color:var(--ink-soft); display:block; margin-bottom:6px;}
+  .budget-bar{height:10px; background:#efe8d8; border-radius:20px; overflow:hidden; margin-top:8px;}
+  .budget-fill{height:100%; background:var(--primary); transition: width 0.25s ease;}
+  .budget-fill.over{background:var(--rust);}
+  .budget-status{font-size:12px; color:var(--ink-soft); margin-top:6px; font-family:'Nunito Sans', sans-serif;}
+
+  .clear-btn{
+    font-family:'Nunito Sans', sans-serif; font-size:12px; font-weight:600; color:var(--ink-soft);
+    background:none; border:1px solid var(--paper-line); border-radius:20px;
+    padding:6px 13px; cursor:pointer;
+  }
+  .clear-btn:hover{border-color:var(--rust); color:var(--rust);}
+
+  .calc-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;}
+  .field label{font-size:12px; color:var(--ink-soft); display:block; margin-bottom:5px;}
+  .calc-result{
+    margin-top: 6px;
+    padding: 16px;
+    background: var(--primary-tint);
+    border-radius: 14px;
+    text-align:center;
+  }
+  .calc-result .num{font-family:'Newsreader', serif; font-size:32px; font-weight:600; color:var(--primary);}
+  .calc-result .cap{font-family:'Nunito Sans', sans-serif; font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft); margin-top:4px;}
+  .formula-note{font-size:13px; color:var(--ink-soft); margin-top:10px; line-height:1.55; font-family:'Nunito Sans', sans-serif;}
+
+  .tab-row{display:flex; gap:6px; margin-bottom:16px; border-bottom:1px solid var(--paper-line);}
+  .tab-btn{
+    font-family:'Nunito Sans', sans-serif;
+    font-size:13.5px;
+    font-weight:600;
+    background:none;
+    border:none;
+    color:var(--ink-soft);
+    padding:8px 4px 10px;
+    margin-right:14px;
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+  }
+  .tab-btn.active{color:var(--primary); border-bottom-color:var(--primary);}
+  .tab-btn:hover{color:var(--ink);}
+
+  .calc-subhead{
+    font-family:'Newsreader', serif; font-weight:500; font-style:italic; font-size:16px;
+    display:flex; align-items:baseline; gap:8px; margin-bottom:10px;
+    padding-top:14px; border-top:1px solid var(--paper-line);
+  }
+  .calc-subhead-tag{
+    font-family:'Nunito Sans', sans-serif; font-size:10.5px; font-weight:700;
+    letter-spacing:0.04em; text-transform:uppercase; color:var(--ink-soft); font-style:normal;
+  }
+
+  .confidence-flag{
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    border: 1px solid transparent;
+  }
+  .confidence-flag.warn{
+    background: var(--rust-tint);
+    border-color: var(--rust);
+    color: #7a3323;
+  }
+  .confidence-flag.caution{
+    background: var(--amber-tint);
+    border-color: var(--amber);
+    color: #7a5c17;
+  }
+
+  .match-card{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:14px 16px; margin-top:10px;
+    border:none; border-radius:14px;
+    background:#fff; box-shadow: 0 1px 6px rgba(90,74,44,0.06);
+  }
+  .match-card.best{background:var(--primary-tint); box-shadow:none;}
+  .match-name{font-weight:700; font-size:14.5px;}
+  .match-meta{font-size:12px; color:var(--ink-soft); margin-top:2px; font-style:italic;}
+  .match-sim{
+    font-family:'Nunito Sans', sans-serif; font-size:11px; font-weight:700; letter-spacing:0.03em;
+    text-transform:uppercase; color:var(--primary); margin-top:3px;
+  }
+  .match-fid{
+    font-family:'Newsreader', serif; font-size:28px; font-weight:600; color:var(--primary);
+    text-align:right; white-space:nowrap; padding-left:14px;
+  }
+  .match-fid .u{font-family:'Nunito Sans', sans-serif; font-size:10px; font-weight:700; color:var(--ink-soft); display:block; text-transform:uppercase;}
+  .match-empty{color:var(--ink-soft); font-size:13px; font-style:italic; padding:12px 0;}
+
+  .recipe-card{
+    padding:14px 16px; margin-top:10px;
+    border:none; border-radius:14px; background:#fff;
+    box-shadow: 0 1px 6px rgba(90,74,44,0.06);
+  }
+  .recipe-card-top{display:flex; justify-content:space-between; align-items:center; gap:10px;}
+  .recipe-card-name{font-weight:700; font-size:14.5px;}
+  .recipe-card-meta{font-size:12px; color:var(--ink-soft); margin-top:2px; font-style:italic;}
+  .recipe-card-fid{
+    font-family:'Newsreader', serif; font-size:26px; font-weight:600; color:var(--primary);
+    text-align:right; white-space:nowrap; padding-left:14px;
+  }
+  .recipe-card-fid .u{font-family:'Nunito Sans', sans-serif; font-size:9.5px; font-weight:700; color:var(--ink-soft); display:block; text-transform:uppercase;}
+  .recipe-card-ingredients{
+    list-style:none; margin:10px 0 0; padding:8px 0 0; border-top:1px dashed var(--paper-line);
+    font-size:12.5px; color:var(--ink-soft);
+  }
+  .recipe-card-ingredients li{display:flex; justify-content:space-between; padding:2px 0;}
+  .recipe-card-actions{display:flex; gap:8px; margin-top:10px;}
+
+  .food-suggestions{
+    position:absolute; top:100%; left:0; right:0; z-index:10;
+    background:#fff; border:1px solid var(--paper-line); border-top:none;
+    border-radius:0 0 14px 14px; max-height:220px; overflow-y:auto;
+    box-shadow:0 8px 18px rgba(90,74,44,0.10);
+  }
+  .food-suggestion{
+    display:flex; justify-content:space-between; align-items:baseline; gap:10px;
+    padding:9px 13px; font-size:13.5px; cursor:pointer;
+  }
+  .food-suggestion:hover, .food-suggestion.active{background:var(--primary-tint);}
+  .food-suggestion .fs-meta{
+    font-family:'Nunito Sans', sans-serif; font-size:10.5px; text-transform:uppercase;
+    letter-spacing:0.03em; font-weight:700; color:var(--ink-soft); white-space:nowrap;
+  }
+
+  footer{
+    max-width:980px; margin: 40px auto 0; font-size:12px; color:var(--ink-soft); line-height:1.6;
+    border-top:1px solid var(--paper-line); padding-top:16px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">PCOS &amp; Metabolic Nutrition · Reference Tool</div>
+    <h1>Food Insulin Demand Guide</h1>
+    <div class="sub">
+      A simple tool for estimating how much insulin your body needs to release after
+      eating a food — a measure called Food Insulin Demand (FID). Based on Dr. Fiona
+      McCulloch's book <em>8 Steps to Reverse Your PCOS</em> and the underlying insulin
+      index research from Dr. Kirstine Bell's PhD at the University of Sydney. Search
+      for a food, add it to today's tally, or estimate the FID of something that isn't
+      listed yet.
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Food Insulin Demand Guide</div>
+        <button class="clear-btn" id="toggleLedger">Collapse ▾</button>
+      </div>
+      <div class="card-body">
+        <div id="ledgerCollapsible">
+          <div class="search-row">
+            <input type="text" id="search" placeholder="Search foods… e.g. yogurt, rice, salmon">
+          </div>
+          <div class="cat-pills" id="catPills"></div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Food</th>
+                  <th>Quantity</th>
+                  <th>FID</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="foodRows"></tbody>
+            </table>
+          </div>
+          <div id="noResults" class="empty-note" style="display:none;">No foods match that search.</div>
+          <div class="legend">
+            <span><span class="dot" style="background:var(--primary)"></span> Low (0–15)</span>
+            <span><span class="dot" style="background:var(--amber)"></span> Moderate (16–45)</span>
+            <span><span class="dot" style="background:var(--rust)"></span> High (46+)</span>
+            <span><span style="color:var(--ink-soft);font-weight:600;">†</span> Composition-estimated (not directly tested)</span>
+            <span><span style="color:var(--primary);font-weight:600;">‡</span> Free food (too low in kJ to test; FID = 0)</span>
+          </div>
+        </div>
+        <div id="ledgerCollapsedNote" class="empty-note" style="display:none;">Guide collapsed — tap "Expand" above to search or browse foods.</div>
+      </div>
+    </div>
+
+      <div class="card" id="estimateCard">
+        <div class="card-header">
+          <div class="card-title">Estimate a Food's FID</div>
+          <button class="clear-btn" id="toggleEstimate">Expand ▸</button>
+        </div>
+        <div class="card-body">
+        <div id="estimateCollapsible" style="display:none;">
+          <div class="tab-row">
+            <button class="tab-btn active" id="tabFind" data-tab="find">Find a food</button>
+            <button class="tab-btn" id="tabMacro" data-tab="macro">Estimate from macros</button>
+          </div>
+
+          <!-- MODE 0+1 merged: search once, route to a tested closest-match or a reference FII -->
+          <div id="paneFind" class="calc-pane">
+            <div class="field" style="position:relative; margin-bottom:16px;">
+              <label for="findFoodName">Search by food name</label>
+              <input type="text" id="findFoodName" placeholder="e.g. greek yogurt, salmon, chickpea" autocomplete="off">
+              <div id="findFoodSuggestions" class="food-suggestions" style="display:none;"></div>
+            </div>
+
+            <div class="calc-subhead" style="border-top:none; padding-top:0;">Macro-based estimate <span class="calc-subhead-tag">tested Food Insulin Demand Guide</span></div>
+            <div class="field" id="matchWeightField" style="margin-bottom:14px; display:none;">
+              <label for="matchWeight">Weight of your portion (g) <span style="font-weight:400;">(scales the macros below)</span></label>
+              <input type="number" id="matchWeight" placeholder="e.g. 85">
+              <div id="matchWeightNote" style="font-size:11.5px; color:var(--ink-soft); margin-top:6px; line-height:1.4;"></div>
+            </div>
+            <div class="calc-grid">
+              <div class="field">
+                <label for="matchCarb">Carbohydrate (g)</label>
+                <input type="number" id="matchCarb" placeholder="e.g. 4">
+              </div>
+              <div class="field">
+                <label for="matchProtein">Protein (g)</label>
+                <input type="number" id="matchProtein" placeholder="e.g. 5">
+              </div>
+              <div class="field">
+                <label for="matchFat">Fat (g)</label>
+                <input type="number" id="matchFat" placeholder="e.g. 20">
+              </div>
+              <div class="field">
+                <label for="matchCalories">Calories <span style="font-weight:400;">(auto-filled, editable)</span></label>
+                <input type="number" id="matchCalories" placeholder="e.g. 200">
+              </div>
+            </div>
+            <div id="matchResults"></div>
+            <div class="formula-note">
+              Finds the foods in the guide whose calorie split between carb / protein / fat is closest to yours,
+              then scales that food's <em>tested</em> FID to your portion's calorie count
+              (estimate = your calories × matched food's FID ÷ matched food's calories). This sidesteps
+              the fat-blindness of the regression equation, since you're borrowing an actual measured
+              value rather than a formula — but it's still only as good as the match. A food with a similar
+              macro split can still behave differently (fiber, food matrix, processing all matter), so
+              prefer a close match in food type too, not just macros.
+            </div>
+
+            <div class="calc-subhead" style="margin-top:26px;">Known Insulin Index estimate <span class="calc-subhead-tag">community reference, not tested</span></div>
+            <div id="fiiFoodNote" style="font-size:11.5px; color:var(--ink-soft); margin-bottom:10px; line-height:1.4; display:none;"></div>
+            <div class="calc-grid">
+              <div class="field">
+                <label for="calCalories">Calories in your portion</label>
+                <input type="number" id="calCalories" placeholder="e.g. 180">
+              </div>
+              <div class="field">
+                <label for="calFII">Food Insulin Index (FII)</label>
+                <input type="number" id="calFII" placeholder="e.g. 59">
+              </div>
+            </div>
+            <div class="calc-result">
+              <div class="num" id="calResult">0</div>
+              <div class="cap">Estimated FID</div>
+            </div>
+            <div class="formula-note">
+              FID = calories × FII ÷ 239<br>
+              FII is scaled to glucose, referenced to 239 calories (1000 kJ) of the food.
+              This reference is compiled from published studies (Foodstruct.com) — it's a
+              useful ballpark, but it is <em>not</em> the same tested methodology as the
+              Food Insulin Demand Guide's FID values, and different studies sometimes disagree by a wide
+              margin. Prefer the macro-based estimate above when a food is directly
+              available there.
+            </div>
+          </div>
+
+          <!-- MODE 2: macros only -->
+          <div id="paneMacro" class="calc-pane" style="display:none;">
+            <div class="calc-grid">
+              <div class="field">
+                <label for="macroCarb">Carbohydrate (g)</label>
+                <input type="number" id="macroCarb" placeholder="e.g. 4">
+              </div>
+              <div class="field">
+                <label for="macroProtein">Protein (g)</label>
+                <input type="number" id="macroProtein" placeholder="e.g. 5">
+              </div>
+              <div class="field">
+                <label for="macroFat">Fat (g)</label>
+                <input type="number" id="macroFat" placeholder="e.g. 20">
+              </div>
+              <div class="field">
+                <label for="macroCalories">Calories <span style="font-weight:400;">(auto-filled, editable)</span></label>
+                <input type="number" id="macroCalories" placeholder="e.g. 200">
+              </div>
+            </div>
+            <div class="calc-result">
+              <div class="num" id="macroResult">0</div>
+              <div class="cap">Estimated FID <span id="macroFIIsub"></span></div>
+            </div>
+            <div id="macroConfidence" class="confidence-flag" style="display:none;"></div>
+            <div class="formula-note">
+              Step 1 — scale carbohydrate &amp; protein to a 239-calorie (1000 kJ) reference portion.<br>
+              Step 2 — FII ≈ 10.4 + (1.0 × scaled carb g) + (0.4 × scaled protein g)<br>
+              Step 3 — FID = calories × FII ÷ 239<br><br>
+              This is the published equation from Bell, Petocz, Colagiuri &amp; Brand-Miller (2016, <em>Nutrients</em>)
+              for estimating FII from macros alone — it explains about half the variation in directly-tested
+              FII values, using only carbohydrate and protein. Fat is deliberately left out: in their own
+              regression, it wasn't a significant independent predictor once carb and protein were included.
+              We checked this against foods with known values — for walnuts (FII 5, tested), this equation
+              overestimates badly (≈18) because it has no way to discount for very high fat content; for
+              poached eggs (FID 14, tested), it comes much closer (≈12) because protein does most of the
+              work there. There's no simple fat penalty that fixes the walnuts case without breaking the
+              eggs case, so rather than force one in, this calculator flags high-fat foods below instead —
+              treat those results as a ceiling, not a number.
+            </div>
+          </div>
+        </div>
+        <div id="estimateCollapsedNote" class="empty-note">Estimator collapsed — tap "Expand" above to search or calculate a food's FID.</div>
+        </div>
+      </div>
+
+      <div class="card" id="recipesCard">
+        <div class="card-header">
+          <div class="card-title">Recipes</div>
+          <button class="clear-btn" id="toggleRecipes">Expand ▸</button>
+        </div>
+        <div class="card-body">
+        <div id="recipesCollapsible" style="display:none;">
+          <div class="formula-note" style="margin-bottom:14px;">
+            Build a recipe from Food Insulin Demand Guide ingredients (by weight) and it sums their tested
+            FID, same as the booklet's own guidance for home-made meals. Set how many
+            servings the recipe makes to get a per-serving estimate.
+          </div>
+
+          <button class="clear-btn" id="togglePlateGuide" style="margin-bottom:14px;">How should I build a balanced plate?</button>
+          <div id="plateGuide" style="display:none; margin-bottom:16px;">
+            <ul class="tally-list">
+              <li>
+                <div><div class="l">Protein</div><div class="q">poultry or fish give more volume than beef for the same insulin count</div></div>
+                <div class="r" style="font-size:13px; color:var(--ink-soft); text-align:right; max-width:52%;">Palm-sized portion</div>
+              </li>
+              <li>
+                <div><div class="l">Vegetables</div><div class="q"></div></div>
+                <div class="r" style="font-size:13px; color:var(--ink-soft); text-align:right; max-width:52%;">About half the plate</div>
+              </li>
+              <li>
+                <div><div class="l">Healthy fat</div><div class="q"></div></div>
+                <div class="r" style="font-size:13px; color:var(--ink-soft); text-align:right; max-width:52%;">~1 tbsp oil, or a serving of avocado or nuts</div>
+              </li>
+              <li>
+                <div><div class="l">Carbohydrate</div><div class="q">if eating bread, prioritize homemade gluten/grain-free options high in healthy fat and protein</div></div>
+                <div class="r" style="font-size:13px; color:var(--ink-soft); text-align:right; max-width:52%;">Small serving — berries, sweet potato, or squash first</div>
+              </li>
+            </ul>
+            <div class="formula-note">
+              From Dr. Fiona McCulloch's <em>8 Steps to Reverse Your PCOS</em>.
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:14px;">
+            <label for="recipeName">Recipe name</label>
+            <input type="text" id="recipeName" placeholder="e.g. Chicken stir-fry">
+          </div>
+
+          <div class="field" style="position:relative; margin-bottom:10px;">
+            <label for="recipeIngredientSearch">Add an ingredient</label>
+            <input type="text" id="recipeIngredientSearch" placeholder="e.g. chicken, rice, broccoli" autocomplete="off">
+            <div id="recipeIngredientSuggestions" class="food-suggestions" style="display:none;"></div>
+          </div>
+          <div class="calc-grid" id="recipeWeightRow" style="display:none; margin-bottom:14px; align-items:end;">
+            <div class="field">
+              <label for="recipeIngredientWeight">Weight (g)</label>
+              <input type="number" id="recipeIngredientWeight" placeholder="e.g. 85">
+            </div>
+            <div class="field">
+              <button class="add-btn" id="addRecipeIngredientBtn" style="width:100%; padding:9px 0;">+ Add ingredient</button>
+            </div>
+          </div>
+
+          <button class="clear-btn" id="toggleManualIngredient" style="margin-bottom:10px;">+ Add a custom ingredient (not in the guide)</button>
+          <div class="calc-grid" id="recipeManualRow" style="display:none; margin-bottom:14px; align-items:end;">
+            <div class="field">
+              <label for="recipeManualName">Ingredient name</label>
+              <input type="text" id="recipeManualName" placeholder="e.g. Tofu (unlisted brand)">
+            </div>
+            <div class="field">
+              <label for="recipeManualFid">FID contribution</label>
+              <input type="number" id="recipeManualFid" placeholder="e.g. 6">
+            </div>
+          </div>
+          <button class="add-btn" id="addManualIngredientBtn" style="display:none; margin-bottom:14px;">+ Add custom ingredient</button>
+
+          <ul class="tally-list" id="recipeIngredientList"></ul>
+          <div class="tally-total">
+            <div class="label">Total FID</div>
+            <div class="num" id="recipeTotalFid">0</div>
+          </div>
+
+          <div class="field" style="margin:14px 0 0;">
+            <label for="recipeServings">Servings in this recipe</label>
+            <input type="number" id="recipeServings" min="1" value="1">
+          </div>
+          <div class="calc-result" style="margin-top:10px;">
+            <div class="num" id="recipePerServing">0</div>
+            <div class="cap">Estimated FID per serving</div>
+          </div>
+
+          <button class="add-btn" id="saveRecipeBtn" style="margin-top:14px; padding:9px 14px;">Save recipe</button>
+
+          <div id="savedRecipesList" style="margin-top:22px;"></div>
+        </div>
+        <div id="recipesCollapsedNote" class="empty-note">Recipes collapsed — tap "Expand" above to build or view a recipe.</div>
+        </div>
+      </div>
+
+      <div class="card" id="tallyCard">
+        <div class="card-header">
+          <div class="card-title">Today's Tally</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button class="clear-btn" id="clearTally">Clear</button>
+            <button class="clear-btn" id="toggleTally">Expand ▸</button>
+          </div>
+        </div>
+        <div class="card-body">
+        <div id="tallyCollapsible" style="display:none;">
+          <ul class="tally-list" id="tallyList"></ul>
+          <div class="tally-total">
+            <div class="label">Total FID</div>
+            <div class="num" id="tallyTotal">0</div>
+          </div>
+          <div class="budget-row">
+            <label for="budgetInput">Optional daily FID target</label>
+            <input type="number" id="budgetInput" placeholder="e.g. 150" min="0">
+            <div class="budget-bar"><div class="budget-fill" id="budgetFill" style="width:0%"></div></div>
+            <div class="budget-status" id="budgetStatus"></div>
+          </div>
+
+          <button class="clear-btn" id="toggleInsulinTargets" style="margin-top:14px;">Not sure what to aim for?</button>
+          <div id="insulinTargetsGuide" style="display:none; margin-top:12px;">
+            <ul class="tally-list">
+              <li>
+                <div><div class="l">Breakfast</div><div class="q">higher fat helps set up the rest of the day</div></div>
+                <div class="r"><span style="font-family:'Newsreader',serif; font-weight:600; font-size:15px;">35–45</span></div>
+              </li>
+            </ul>
+            <div class="calc-subhead" style="font-size:14.5px; margin-top:4px;">Meal</div>
+            <ul class="tally-list">
+              <li>
+                <div style="padding-left:14px;"><div class="l">Insulin resistant, significant weight-loss goal</div><div class="q">some do well under 50 — supervise with a practitioner</div></div>
+                <div class="r"><span style="font-family:'Newsreader',serif; font-weight:600; font-size:15px;">50–60</span></div>
+              </li>
+              <li>
+                <div style="padding-left:14px;"><div class="l">Average weight, mildly insulin resistant</div><div class="q"></div></div>
+                <div class="r"><span style="font-family:'Newsreader',serif; font-weight:600; font-size:15px;">55–65</span></div>
+              </li>
+              <li>
+                <div style="padding-left:14px;"><div class="l">Non-insulin resistant, athletic, or underweight</div><div class="q">going too low here can affect leptin and ovulation</div></div>
+                <div class="r"><span style="font-family:'Newsreader',serif; font-weight:600; font-size:15px;">65–90</span></div>
+              </li>
+            </ul>
+            <div class="calc-subhead" style="font-size:14.5px; margin-top:4px;">Snack</div>
+            <ul class="tally-list">
+              <li>
+                <div style="padding-left:14px;"><div class="l">Insulin resistant</div><div class="q">some do better skipping snacks entirely</div></div>
+                <div class="r"><span style="font-family:'Newsreader',serif; font-weight:600; font-size:15px;">&lt;15</span></div>
+              </li>
+              <li>
+                <div style="padding-left:14px;"><div class="l">Non-insulin resistant, athletic, or underweight</div><div class="q"></div></div>
+                <div class="r"><span style="font-family:'Newsreader',serif; font-weight:600; font-size:15px;">~20</span></div>
+              </li>
+              <li>
+                <div style="padding-left:14px;"><div class="l">Post-workout</div><div class="q">within 15–20 min of exercise — low fat, with carbs and protein</div></div>
+                <div class="r"><span style="font-family:'Newsreader',serif; font-weight:600; font-size:15px;">20–30</span></div>
+              </li>
+            </ul>
+            <div class="formula-note">
+              From Dr. Fiona McCulloch's <em>8 Steps to Reverse Your PCOS</em> — these are
+              <strong>per-meal / per-snack</strong> targets, not a daily total. Add up your
+              planned meals and snacks to build your own daily target above.
+            </div>
+          </div>
+        </div>
+        <div id="tallyCollapsedNote" class="empty-note">Tally collapsed — tap "Expand" above to view or add to today's tally.</div>
+        </div>
+      </div>
+  </div>
+
+  <footer>
+    Food Insulin Demand values are sourced from Dr. Fiona McCulloch's article
+    "Food Insulin Demand – A Dietary Metric for PCOS and Metabolic Health," drawing on FII research
+    from Dr. Jennie Brand-Miller's team at the University of Sydney and Dr. Kirstine Bell's clinical
+    thesis on the insulin index. Items marked with † are estimated from composition and have not been
+    directly tested in human volunteers. This tool is for general nutrition reference only and isn't
+    medical advice — talk to your practitioner about how it fits your care.
+  </footer>
+</div>
+
+<script>
+const FOODS = [
+  // Breads
+  {name:"White Bread", qty:"1 slice (35g)", fid:26, cat:"grain", carb:17.2, protein:3.2, fat:1.1, cal:93},
+  {name:"Grain Bread", qty:"1 slice (28g)", fid:11, cat:"grain", carb:12.3, protein:2.8, fat:1.1, cal:74},
+  {name:"Wholemeal Bread", qty:"1 slice (40g)", fid:28, cat:"grain", carb:16.4, protein:3.6, fat:1.4, cal:99},
+  {name:"Soy & Linseed Bread", qty:"1 slice (41g)", fid:22, cat:"grain", carb:12.3, protein:5.7, fat:3.7, cal:107},
+  {name:"Tortilla", qty:"1 tortilla (40g)", fid:14, cat:"grain", carb:20, protein:3.2, fat:3.2, cal:124},
+  {name:"Croissant", qty:"1 medium (50g)", fid:44, cat:"grain", carb:22.5, protein:4, fat:10.5, cal:203},
+  // Cereals
+  {name:"Rice Bubbles", qty:"30g (1 cup)", fid:45, cat:"grain", carb:26.1, protein:1.8, fat:0.3, cal:114},
+  {name:"Corn Flakes", qty:"30g (1 cup)", fid:26, cat:"grain", carb:25.2, protein:2.1, fat:0.3, cal:113},
+  {name:"Special K", qty:"40g (1 cup)", fid:30, cat:"grain", carb:32, protein:6, fat:0.6, cal:150},
+  {name:"Sustain", qty:"60g (1 cup)", fid:50, cat:"grain", carb:42, protein:5.4, fat:1.8, cal:222},
+  {name:"Sultana Bran", qty:"60g (1 cup)", fid:56, cat:"grain", carb:40.8, protein:5.4, fat:0.9, cal:198},
+  {name:"All-Bran Original", qty:"60g (1 cup)", fid:19, cat:"grain", carb:27.6, protein:8.4, fat:1.8, cal:141},
+  {name:"Porridge (oats + water)", qty:"1/3 cup raw oats (30g)", fid:15, cat:"grain", carb:18.3, protein:3.9, fat:2.1, cal:111},
+  {name:"Cheerios", qty:"30g (1 cup)", fid:29, cat:"grain", carb:22.2, protein:2.4, fat:1.5, cal:113},
+  {name:"All-Bran Wheat Flakes", qty:"40g (1 cup)", fid:29, cat:"grain", carb:27.2, protein:4.4, fat:0.8, cal:132},
+  {name:"Honey Weets", qty:"30g (1 cup)", fid:23, cat:"grain", carb:24, protein:2.4, fat:0.6, cal:111},
+  // Rice & Pasta
+  {name:"Spiral Pasta", qty:"1 cup cooked (~150g)", fid:22, cat:"grain", carb:37.5, protein:7.5, fat:1.5, cal:197},
+  {name:"Wholemeal Pasta", qty:"1 cup cooked (~150g)", fid:20, cat:"grain", carb:34.5, protein:9, fat:1.5, cal:186},
+  {name:"Brown Rice", qty:"1 cup cooked (~165g)", fid:49, cat:"grain", carb:38, protein:4.5, fat:1.65, cal:185},
+  {name:"White Rice", qty:"1 cup cooked (~158g)", fid:46, cat:"grain", carb:44.2, protein:4.3, fat:0.5, cal:205},
+  // Fruit
+  {name:"Apple", qty:"1 medium (150g)", fid:14, cat:"fruit", carb:21, protein:0.45, fat:0.3, cal:78},
+  {name:"Orange", qty:"1 medium (230g)", fid:11, cat:"fruit", carb:27.6, protein:2.1, fat:0.23, cal:108},
+  {name:"Banana", qty:"1 medium (170g)", fid:23, cat:"fruit", carb:39.1, protein:1.9, fat:0.5, cal:151},
+  {name:"Honeydew Melon", qty:"1 slice (100g)", fid:7, cat:"fruit", carb:8, protein:0.5, fat:0.1, cal:36},
+  {name:"Sultanas", qty:"40g (1/4 cup)", fid:17, cat:"fruit", carb:31.6, protein:1.2, fat:0.2, cal:120},
+  {name:"Grapes", qty:"12 grapes (120g)", fid:18, cat:"fruit", carb:21.6, protein:0.7, fat:0.24, cal:83},
+  {name:"Peaches, Canned in Syrup", qty:"1 cup (250g)", fid:47, cat:"fruit", carb:45, protein:1.25, fat:0.25, cal:188},
+  {name:"Peaches, Canned in Juice", qty:"1 cup (250g)", fid:28, cat:"fruit", carb:27.5, protein:1.25, fat:0.25, cal:118},
+  {name:"Berries", qty:"1 cup", fid:0, cat:"fruit", free:true, carb:20.9, protein:1, fat:0.4, cal:82},
+  // Vegetables
+  {name:"Carrots", qty:"1 medium / ½ cup raw (78g)", fid:6, cat:"vegetable", carb:7.8, protein:0.7, fat:0.16, cal:32},
+  {name:"Peas", qty:"½ cup raw (80g)", fid:9, cat:"vegetable", carb:11.2, protein:4, fat:0.32, cal:65},
+  {name:"Broccoli", qty:"½ cup raw (55g)", fid:2, cat:"vegetable", carb:3.85, protein:1.54, fat:0.22, cal:19},
+  {name:"Cauliflower", qty:"½ cup raw (80g)", fid:5, cat:"vegetable", carb:4, protein:1.52, fat:0.24, cal:20},
+  {name:"Leafy Green Vegetables", qty:"1 cup", fid:0, cat:"vegetable", free:true, carb:1.1, protein:0.9, fat:0.1, cal:7},
+  {name:"Coleslaw", qty:"½ cup (100g)", fid:8, cat:"vegetable", carb:8, protein:1.5, fat:12, cal:150},
+  {name:"Corn", qty:"½ cup (80g)", fid:14, cat:"vegetable", carb:15.2, protein:2.56, fat:0.96, cal:77},
+  {name:"Boiled Potato", qty:"1 medium (150g)", fid:36, cat:"vegetable", carb:25.5, protein:3, fat:0.15, cal:116},
+  {name:"Sweet Potato (boiled)", qty:"1 small (120g)", fid:37, cat:"vegetable", carb:24, protein:1.92, fat:0.12, cal:103},
+  {name:"Roast Pumpkin", qty:"100g", fid:15, cat:"vegetable", carb:10, protein:1.2, fat:2, cal:65},
+  {name:"Butternut Squash", qty:"1/2 cup (102g)", fid:18, cat:"vegetable", carb:10.5, protein:0.9, fat:0.1, cal:41},
+  {name:"Avocado", qty:"¼ avocado (50g)", fid:2, cat:"fat", carb:4.25, protein:1, fat:7.35, cal:80},
+  // Dairy
+  {name:"Skim Milk", qty:"250mL (1 cup)", fid:23, cat:"dairy", carb:12.5, protein:8.5, fat:0.25, cal:88},
+  {name:"Full Cream Milk", qty:"250mL (1 cup)", fid:17, cat:"dairy", carb:12, protein:8.25, fat:9.5, cal:163},
+  {name:"Low Fat Milk", qty:"250mL (1 cup)", fid:16, cat:"dairy", carb:12.5, protein:8.75, fat:3.75, cal:118},
+  {name:"Low Fat Fruit Yoghurt", qty:"175g tub", fid:57, cat:"dairy", carb:29.75, protein:7.9, fat:1.75, cal:166},
+  {name:"Vanilla Ice-Cream", qty:"1 scoop (50g)", fid:27, cat:"dairy", carb:12, protein:1.75, fat:5.5, cal:104},
+  {name:"Low Fat Vanilla Ice-Cream", qty:"1 scoop (50g)", fid:19, cat:"dairy", carb:12.5, protein:2, fat:1.5, cal:70},
+  {name:"Fruit Frozen Yoghurt", qty:"1 scoop (50g)", fid:18, cat:"dairy", carb:11, protein:1.75, fat:1, cal:60},
+  {name:"Cheddar Cheese", qty:"1 slice (25g)", fid:14, cat:"dairy", carb:0.25, protein:6.25, fat:8.25, cal:101},
+  {name:"Low Fat Cheddar Cheese", qty:"1 slice (21g)", fid:4, cat:"dairy", carb:0.21, protein:6.3, fat:3.15, cal:55},
+  {name:"Low Fat Processed Cheese", qty:"1 slice (20.5g)", fid:6, cat:"dairy", carb:0.82, protein:5.74, fat:1.64, cal:39},
+  {name:"Cream Cheese", qty:"1 tbsp (20g)", fid:5, cat:"dairy", carb:0.8, protein:1.2, fat:6.8, cal:68},
+  {name:"Reduced Fat Cottage Cheese", qty:"½ cup (120g)", fid:21, cat:"dairy", carb:4.2, protein:15.6, fat:4.8, cal:118},
+  {name:"Low Fat Cottage Cheese", qty:"½ cup (120g)", fid:24, cat:"dairy", carb:4.8, protein:16.8, fat:2.4, cal:106},
+  // Meat & Chicken
+  {name:"Beef Steak", qty:"130g cooked", fid:30, cat:"protein", carb:0, protein:40.3, fat:10.4, cal:260},
+  {name:"Panfried Chicken", qty:"130g cooked", fid:26, cat:"protein", carb:0, protein:36.4, fat:13, cal:280},
+  {name:"Roast Chicken", qty:"130g cooked", fid:20, cat:"protein", carb:0, protein:40.3, fat:4.68, cal:215},
+  {name:"Short-Cut Bacon", qty:"2 rashers (72g)", fid:6, cat:"protein", carb:0.72, protein:20.2, fat:14.4, cal:216},
+  {name:"Frankfurter (Hot Dog)", qty:"1 thin (70g)", fid:12, cat:"protein", carb:2.1, protein:8.4, fat:18.2, cal:203},
+  // Seafood
+  {name:"White Fish Fillet", qty:"130g cooked", fid:17, cat:"protein", carb:0, protein:29.9, fat:1.3, cal:137},
+  {name:"Battered Fish Fillet", qty:"1 fillet (70g)", fid:34, cat:"protein", carb:10.5, protein:9.8, fat:8.4, cal:161},
+  {name:"Prawns", qty:"7 shelled (50g)", fid:4, cat:"protein", carb:0.15, protein:12, fat:0.15, cal:50},
+  {name:"Tuna in Olive Oil", qty:"95g tin, drained (80g)", fid:9, cat:"protein", carb:0, protein:20.8, fat:6.4, cal:144},
+  {name:"Tuna in Springwater", qty:"95g tin, drained (80g)", fid:9, cat:"protein", carb:0, protein:20, fat:0.8, cal:88},
+  // Nuts, Eggs & Meat Alt.
+  {name:"Salted Peanuts", qty:"1/3 cup (50g)", fid:12, cat:"fat", carb:8, protein:12.5, fat:24.5, cal:295},
+  {name:"Walnuts", qty:"¼ cup (30g)", fid:4, cat:"fat", carb:4.1, protein:4.6, fat:19.6, cal:196},
+  {name:"Almond Butter", qty:"1 tbsp (16g)", fid:2, cat:"fat", est:true, carb:3, protein:3.4, fat:8.8, cal:98},
+  {name:"Baked Beans", qty:"½ cup (130g)", fid:33, cat:"legume", carb:14.3, protein:6.5, fat:0.65, cal:91},
+  {name:"Navy Beans", qty:"1 cup", fid:22, cat:"legume", carb:47.3, protein:14.9, fat:1.1, cal:255},
+  {name:"Tofu", qty:"100g", fid:9, cat:"legume", carb:2, protein:12, fat:5, cal:100},
+  {name:"Poached Eggs", qty:"2 large", fid:14, cat:"protein", carb:0.7, protein:12.6, fat:9.5, cal:143},
+  // Meals & Convenience Foods
+  {name:"McDonald's Fries", qty:"1 small serve (72g)", fid:54, cat:"meal", carb:33.8, protein:2.9, fat:10.8, cal:230},
+  {name:"Cheese Pizza", qty:"1 slice (71g)", fid:37, cat:"meal", carb:22.7, protein:8.5, fat:7.1, cal:192},
+  {name:"Beef Lasagne", qty:"400g", fid:83, cat:"meal", carb:40, protein:28, fat:24, cal:520},
+  {name:"French Fries", qty:"100g", fid:58, cat:"meal", carb:41, protein:3.4, fat:15, cal:312},
+  {name:"Beef Taco", qty:"100g", fid:17, cat:"meal", carb:15, protein:10, fat:9, cal:190},
+  // Chips & Crackers
+  {name:"Popcorn", qty:"1 cup (25g)", fid:19, cat:"snack", carb:15, protein:2.25, fat:6, cal:120},
+  {name:"Water Crackers", qty:"6 crackers (18g)", fid:20, cat:"snack", carb:13.5, protein:1.62, fat:1.44, cal:76},
+  {name:"Jatz Crackers", qty:"6 crackers (~18g)", fid:22, cat:"snack", carb:11.7, protein:1.44, fat:3.24, cal:83},
+  {name:"Corn Chips", qty:"11 chips (27g)", fid:26, cat:"snack", carb:16.2, protein:1.89, fat:6.75, cal:132},
+  {name:"Potato Chips", qty:"15 chips (27g)", fid:28, cat:"snack", carb:13.5, protein:1.62, fat:9.18, cal:146},
+  {name:"97% Fat-Free Pretzels", qty:"16 pretzels (30g)", fid:35, cat:"snack", carb:24, protein:3, fat:0.6, cal:111},
+  // Confectionary
+  {name:"Mars Bar", qty:"1 regular bar (53g)", fid:87, cat:"snack", carb:34.5, protein:2.1, fat:9.5, cal:237},
+  {name:"Snickers Bar", qty:"1 regular bar (60g)", fid:44, cat:"snack", carb:30, protein:5.4, fat:16.2, cal:293},
+  {name:"Milk Chocolate", qty:"6 squares (30g)", fid:23, cat:"snack", carb:17.1, protein:2.25, fat:9.3, cal:159},
+  {name:"Jellybeans", qty:"10 small (~10g)", fid:33, cat:"snack", carb:9.3, protein:0, fat:0, cal:38},
+  {name:"Sherbet", qty:"1 sachet (12.5g)", fid:4, cat:"snack", carb:11.9, protein:0, fat:0, cal:48},
+  // Baked Goods
+  {name:"Chocolate Chip Cookies", qty:"2 cookies (25g)", fid:33, cat:"grain", carb:16, protein:1.25, fat:5.5, cal:120},
+  {name:"Muesli Bar", qty:"1 bar (31g)", fid:17, cat:"grain", carb:20.2, protein:2.5, fat:4.65, cal:130},
+  {name:"Low Fat Blueberry Muffin", qty:"1 large muffin (170g)", fid:116, cat:"grain", carb:71.4, protein:8.5, fat:10.2, cal:425},
+  {name:"Cinnamon Donut", qty:"1 donut (70g)", fid:58, cat:"grain", carb:35, protein:3.5, fat:14, cal:280},
+  {name:"Chocolate Brownie with Frosting", qty:"1 brownie (50g)", fid:47, cat:"grain", carb:27.5, protein:2.5, fat:11, cal:215},
+  {name:"Apple Pie", qty:"1 slice (100g)", fid:55, cat:"grain", carb:30, protein:2, fat:12, cal:240},
+  {name:"Pancake", qty:"100 gram pancake", fid:83, cat:"grain", carb:28, protein:6, fat:9.7, cal:227},
+  // Sauces & Spreads
+  {name:"Butter", qty:"1 tsp (5g)", fid:0, cat:"condiment", carb:0, protein:0, fat:4.05, cal:36},
+  {name:"Peanut Butter", qty:"1 tsp (15g)", fid:4, cat:"condiment", carb:3, protein:3.75, fat:7.5, cal:90},
+  {name:"Raspberry Jam", qty:"1 tsp (15g)", fid:11, cat:"condiment", carb:9.75, protein:0.05, fat:0, cal:39},
+  {name:"Sugar", qty:"1 tsp (5g)", fid:5, cat:"condiment", carb:5, protein:0, fat:0, cal:20},
+  {name:"Tomato Pasta Sauce", qty:"½ cup (125g)", fid:12, cat:"condiment", carb:10, protein:1.9, fat:2.5, cal:69},
+  {name:"Olive Oil", qty:"1 tbsp (20mL)", fid:2, cat:"condiment", carb:0, protein:0, fat:18, cal:159},
+  // Beverages
+  {name:"Coca-Cola", qty:"1 can (375mL)", fid:29, cat:"beverage", carb:39.75, protein:0, fat:0, cal:158},
+  {name:"Fruit Juice Drink", qty:"200mL", fid:19, cat:"beverage", carb:22, protein:0, fat:0, cal:92},
+  {name:"Carrot Juice", qty:"250mL (1 cup)", fid:14, cat:"beverage", carb:20, protein:2.25, fat:0.25, cal:100},
+  {name:"Orange Juice", qty:"250mL", fid:23, cat:"beverage", carb:25, protein:1.75, fat:0.5, cal:113},
+  {name:"Apple Juice", qty:"250mL", fid:21, cat:"beverage", carb:27.5, protein:0.25, fat:0, cal:115},
+  {name:"Ice Tea", qty:"1 bottle (500mL)", fid:57, cat:"beverage", carb:35, protein:0, fat:0, cal:145},
+];
+
+const CATS = [
+  {key:"all", label:"All"},
+  {key:"protein", label:"Protein"},
+  {key:"grain", label:"Grains"},
+  {key:"vegetable", label:"Vegetables"},
+  {key:"fruit", label:"Fruit"},
+  {key:"dairy", label:"Dairy"},
+  {key:"legume", label:"Legumes"},
+  {key:"fat", label:"Fats & Nuts"},
+  {key:"snack", label:"Snacks"},
+  {key:"condiment", label:"Sauces & Spreads"},
+  {key:"beverage", label:"Beverages"},
+  {key:"meal", label:"Meals"},
+];
+
+// Community reference: Insulin Index (II) values compiled by Foodstruct.com from
+// published studies (see DATA_SOURCES.md, source 4). NOT the same methodology as the
+// tested FID values in FOODS above — kept separate on purpose, surfaced only via the
+// lookup in the "I know the FII" calculator tab. `note` flags a wide range across
+// studies or a value borrowed from a closely related preparation. `aliases` help the
+// name search catch common synonyms.
+const INSULIN_INDEX_REF = [
+  {name:"Brie", ii:7, cat:"dairy"},
+  {name:"Cheese (cheddar, average)", ii:45, cat:"dairy", note:"ranges ~20 (fat-free) to 45 depending on type"},
+  {name:"Cottage Cheese", ii:40, cat:"dairy", note:"low-fat variant ~52"},
+  {name:"Cream Cheese", ii:18, cat:"dairy"},
+  {name:"Milk", ii:34, cat:"dairy", note:"whole ~24–33, skim ~60 in some studies"},
+  {name:"Chocolate Milk", ii:46, cat:"dairy", note:"some studies report 81–86"},
+  {name:"American Cheese", ii:42, cat:"dairy"},
+  {name:"Powdered Milk", ii:85, cat:"dairy", note:"range reported 75–95"},
+  {name:"Ice Cream (vanilla / soft serve)", ii:89, cat:"dairy", note:"some studies report 65–69", aliases:["soft serve"]},
+  {name:"Sherbet", ii:89, cat:"dairy"},
+  {name:"Chocolate Ice Cream", ii:71, cat:"dairy"},
+  {name:"Custard", ii:57, cat:"dairy"},
+  {name:"Cream", ii:8, cat:"dairy", note:"source: Bell PhD thesis (2014), Table 3.1 — directly tested, not Foodstruct.com"},
+  {name:"Yogurt", ii:46, cat:"dairy", note:"flavored fruit yogurts run much higher, 64–115"},
+  {name:"Butter", ii:2, cat:"fat"},
+  {name:"Soy Milk", ii:10, cat:"dairy"},
+
+  {name:"Egg", ii:23, cat:"protein", note:"poached egg ~31"},
+  {name:"Chicken (roast)", ii:23, cat:"protein"},
+  {name:"Pork (grilled)", ii:19, cat:"protein"},
+  {name:"Ham", ii:19, cat:"protein"},
+  {name:"Lamb / Mutton (grilled)", ii:21, cat:"protein"},
+  {name:"Beef Steak (lean cut)", ii:51, cat:"protein", aliases:["tenderloin","flank steak","rib eye","ribeye","beefsteak","sirloin"]},
+  {name:"White Fish (cod, haddock, halibut, pollock, bass, swordfish)", ii:59, cat:"protein", aliases:["cod","haddock","halibut","pollock","bass","swordfish"]},
+  {name:"Tuna", ii:22, cat:"protein", note:"canned in oil ~16, in water ~26"},
+  {name:"Beef Sausage (grilled)", ii:7, cat:"protein", note:"source: Bell PhD thesis (2014), Table 3.1 — directly tested, not Foodstruct.com"},
+  {name:"Walnut", ii:7, cat:"fat"},
+
+  {name:"Hummus", ii:52, cat:"legume"},
+  {name:"Kidney Beans", ii:69, cat:"legume"},
+  {name:"Navy Beans (canned, in tomato sauce)", ii:120, cat:"legume"},
+  {name:"Baked Beans", ii:88, cat:"legume"},
+  {name:"Mixed / Four Bean Salad", ii:34, cat:"legume", note:"confirmed by Bell PhD thesis (2014), Table 3.1 — \"4 Bean Mix\", directly tested"},
+  {name:"Lentils (in tomato sauce)", ii:58, cat:"legume", note:"another study cites up to 103"},
+  {name:"Lentil Soup", ii:42, cat:"legume"},
+  {name:"Cellophane (Mung Bean) Noodles", ii:38, cat:"legume"},
+  {name:"Peanut", ii:20, cat:"legume", note:"also cited 17"},
+  {name:"Peanut Butter", ii:15, cat:"condiment"},
+  {name:"Tofu", ii:21, cat:"legume"},
+
+  {name:"Broccoli", ii:29, cat:"vegetable"},
+  {name:"Carrot", ii:42, cat:"vegetable", note:"also cited 44"},
+  {name:"Cauliflower", ii:48, cat:"vegetable"},
+  {name:"Maize / Corn", ii:53, cat:"vegetable"},
+  {name:"Pea", ii:37, cat:"vegetable"},
+  {name:"Potato (boiled)", ii:121, cat:"vegetable"},
+  {name:"Mashed Potato", ii:118, cat:"vegetable"},
+  {name:"Sweet Potato", ii:96, cat:"vegetable"},
+  {name:"Taro", ii:73, cat:"vegetable"},
+  {name:"Yam", ii:64, cat:"vegetable"},
+  {name:"Pumpkin", ii:77, cat:"vegetable"},
+  {name:"French Fries", ii:74, cat:"vegetable", note:"also cited 54–57"},
+  {name:"Coleslaw", ii:20, cat:"vegetable"},
+  {name:"Tomato Sauce", ii:41, cat:"condiment"},
+
+  {name:"Apple", ii:59, cat:"fruit", note:"Red Delicious; other studies ~43"},
+  {name:"Avocado", ii:6, cat:"fruit"},
+  {name:"Banana", ii:81, cat:"fruit", note:"Cavendish; other studies 59–68"},
+  {name:"Dates", ii:64, cat:"fruit"},
+  {name:"Grape", ii:82, cat:"fruit"},
+  {name:"Mango", ii:112, cat:"fruit"},
+  {name:"Melon (honeydew)", ii:127, cat:"fruit"},
+  {name:"Orange", ii:60, cat:"fruit", note:"also cited 44"},
+  {name:"Orange Juice", ii:55, cat:"beverage"},
+  {name:"Mandarin Orange", ii:60, cat:"fruit"},
+  {name:"Papaya", ii:129, cat:"fruit"},
+  {name:"Peach", ii:39, cat:"fruit", note:"canned ~45"},
+  {name:"Pear", ii:45, cat:"fruit"},
+  {name:"Persimmon", ii:47, cat:"fruit"},
+  {name:"Raisin", ii:42, cat:"fruit", note:"also cited 38"},
+  {name:"Watermelon", ii:84, cat:"fruit"},
+  {name:"Fruit Juice (mixed)", ii:55, cat:"beverage", note:"apple juice ~64"},
+
+  {name:"Bread, White (wheat flour)", ii:100, cat:"grain", note:"wholemeal ~96, grain bread ~56"},
+  {name:"Rye Bread", ii:73, cat:"grain"},
+  {name:"Oatmeal / Porridge", ii:40, cat:"grain", note:"also cited 29"},
+  {name:"Cereal (cornflakes)", ii:25, cat:"grain", note:"also cited 23"},
+  {name:"Barley", ii:46, cat:"grain", note:"also cited 70–71"},
+  {name:"Couscous", ii:84, cat:"grain"},
+  {name:"Millet (pearl)", ii:104, cat:"grain"},
+  {name:"Bran (oat)", ii:51, cat:"grain"},
+  {name:"Brown Rice", ii:62, cat:"grain", note:"also cited 81"},
+  {name:"Oat (starch product)", ii:75, cat:"grain"},
+  {name:"Rice (white)", ii:79, cat:"grain", note:"Basmati ~57, Jasmine ~76"},
+  {name:"Pasta", ii:40, cat:"grain", note:"also cited 29"},
+  {name:"Tagliatelle (long pasta)", ii:42, cat:"grain"},
+  {name:"Penne (short pasta)", ii:118, cat:"grain"},
+  {name:"Noodle (Hokkien)", ii:22, cat:"grain"},
+  {name:"Weetbix", ii:41, cat:"grain", note:"source: Bell PhD thesis (2014), Table 3.1 — directly tested, not Foodstruct.com"},
+  {name:"Spaghetti (semolina)", ii:46, cat:"grain", note:"also cited 42, 61"},
+  {name:"Biscuit (arrowroot)", ii:48, cat:"snack"},
+  {name:"Saltine Cracker (water cracker)", ii:87, cat:"snack", note:"also cited 71"},
+  {name:"Pretzel", ii:102, cat:"snack", note:"fat-free ~74, wheat ~79, soy ~75"},
+  {name:"Tortilla", ii:36, cat:"grain"},
+
+  {name:"Croissant", ii:79, cat:"snack"},
+  {name:"French Toast", ii:79, cat:"meal"},
+  {name:"Muffin", ii:69, cat:"snack"},
+  {name:"Pancake", ii:58, cat:"meal"},
+  {name:"Sweet Roll (cinnamon swirl)", ii:42, cat:"snack"},
+  {name:"Chocolate Cake", ii:82, cat:"snack"},
+  {name:"Gingerbread", ii:73, cat:"snack"},
+  {name:"Chocolate Brownie", ii:60, cat:"snack"},
+  {name:"Chocolate Chip Cookie", ii:92, cat:"snack", note:"also cited 33–67, wide range"},
+  {name:"Apple Pie", ii:47, cat:"snack"},
+  {name:"White Chocolate", ii:63, cat:"snack"},
+  {name:"Chocolate (milk)", ii:34, cat:"snack", note:"also cited up to 102"},
+  {name:"Candy Bar (Snickers-type)", ii:37, cat:"snack", aliases:["snickers"]},
+  {name:"Tim Tam", ii:27, cat:"snack", note:"source: Bell PhD thesis (2014), Table 3.1 — directly tested, not Foodstruct.com"},
+  {name:"MARS Bar", ii:122, cat:"snack"},
+  {name:"Jelly Bean", ii:160, cat:"snack", note:"also cited 117"},
+  {name:"Potato Chip", ii:61, cat:"snack", note:"also cited 45"},
+  {name:"Fruit Preserves (raspberry jam)", ii:85, cat:"condiment"},
+  {name:"Honey", ii:62, cat:"condiment"},
+  {name:"Brown Sugar", ii:83, cat:"condiment"},
+  {name:"Corn Syrup (high-fructose)", ii:65, cat:"condiment"},
+  {name:"Sugar Substitute (maltitol)", ii:35, cat:"condiment"},
+  {name:"Butter Chicken Sauce", ii:16, cat:"condiment", note:"source: Bell PhD thesis (2014), Table 3.1 — directly tested, not Foodstruct.com"},
+  {name:"Rice Pudding", ii:62, cat:"snack"},
+  {name:"Pudding (vanilla)", ii:80, cat:"snack"},
+
+  {name:"Pizza", ii:64, cat:"meal", note:"cheese pizza ~47"},
+  {name:"Taco", ii:24, cat:"meal"},
+  {name:"Chicken Fingers / Nuggets", ii:41, cat:"meal"},
+  {name:"Lasagne (beef)", ii:34, cat:"meal"},
+  {name:"Beef Meat Pie", ii:41, cat:"meal", note:"source: Bell PhD thesis (2014), Table 3.1 — directly tested, not Foodstruct.com"},
+  {name:"Sushi (Chicken Roll)", ii:48, cat:"meal", note:"source: Bell PhD thesis (2014), Table 3.1 — directly tested, not Foodstruct.com", aliases:["sushi"]},
+
+  {name:"Beer", ii:20, cat:"beverage", note:"one study cites up to 130"},
+  {name:"White Wine", ii:3, cat:"beverage"},
+  {name:"Iced Tea", ii:95, cat:"beverage"},
+  {name:"Coca-Cola", ii:60, cat:"beverage"},
+  {name:"Spirits / Distilled Liquor (e.g. gin)", ii:1, cat:"beverage"},
+
+  {name:"Cooking Oil (olive, sunflower, vegetable)", ii:3, cat:"fat", aliases:["vegetable oil","olive oil","sunflower oil"]},
+];
+
+// --- Shared food search matching, used by every search box in the app ---
+// Handles multi-word queries by matching on individual words (so "greek yogurt"
+// still finds "Yogurt" or "Fruit Frozen Yoghurt" even with no exact "Greek Yogurt"
+// entry), normalizes the yogurt/yoghurt spelling split across sources, and expands
+// a short list of common foods that aren't in either list by name but have a close
+// relative that is (e.g. "salmon" -> the White Fish / Tuna entries, "cashew" ->
+// Walnut / Peanut). Not exhaustive — covers the most common gaps, not every food.
+const QUERY_SYNONYMS = {
+  salmon: ["white fish", "tuna"],
+  trout: ["white fish", "tuna"],
+  mackerel: ["white fish", "tuna"],
+  sardine: ["white fish", "tuna"],
+  snapper: ["white fish", "tuna"],
+  herring: ["white fish", "tuna"],
+  anchovy: ["white fish", "tuna"],
+  halibut: ["white fish", "tuna"],
+  cod: ["white fish", "tuna"],
+  cashew: ["walnut", "peanut", "almond"],
+  pecan: ["walnut", "peanut", "almond"],
+  pistachio: ["walnut", "peanut", "almond"],
+  hazelnut: ["walnut", "peanut", "almond"],
+  macadamia: ["walnut", "peanut", "almond"],
+  brazil: ["walnut", "peanut", "almond"],
+  almond: ["walnut", "peanut"],
+  almonds: ["almond", "walnut", "peanut"],
+  shrimp: ["prawn"],
+  quinoa: ["rice", "millet"],
+  oatmeal: ["porridge"],
+  chickpea: ["bean", "lentil", "hummus"],
+  chickpeas: ["bean", "lentil", "hummus"],
+};
+
+function normalizeFoodText(s){
+  return s.toLowerCase().replace(/yoghurt/g, "yogurt");
+}
+
+function foodMatchesQuery(name, aliases, query){
+  const q = query.trim();
+  if (!q) return true;
+  const words = normalizeFoodText(q).split(/\s+/).filter(w => w.length >= 2);
+  if (!words.length) return true;
+  const terms = new Set();
+  words.forEach(w => {
+    terms.add(w);
+    (QUERY_SYNONYMS[w] || []).forEach(t => terms.add(t));
+  });
+  const haystack = normalizeFoodText(name) + " " + (aliases || []).map(normalizeFoodText).join(" ");
+  return [...terms].some(t => haystack.includes(t));
+}
+
+// --- Shared persistence: uses Claude's artifact storage when this file is hosted
+// as a Claude artifact, and falls back to the browser's localStorage otherwise, so
+// the tally/recipes/collapse-state all persist equally well as a standalone file,
+// double-clicked locally, or self-hosted anywhere else. ---
+async function storageSet(key, value){
+  try{
+    if (window.storage){
+      await window.storage.set(key, value);
+    } else {
+      localStorage.setItem(key, value);
+    }
+  } catch(e){ /* storage unavailable, data stays in-memory for this session */ }
+}
+
+async function storageGet(key){
+  try{
+    if (window.storage){
+      const res = await window.storage.get(key);
+      return (res && res.value != null) ? res.value : null;
+    }
+    return localStorage.getItem(key);
+  } catch(e){
+    return null;
+  }
+}
+
+let activeCat = "all";
+let searchTerm = "";
+let tally = [];
+
+const maxFid = Math.max(...FOODS.map(f => f.fid));
+
+function fidClass(fid){
+  if(fid <= 15) return "fid-low";
+  if(fid <= 45) return "fid-mid";
+  return "fid-high";
+}
+
+function renderPills(){
+  const el = document.getElementById("catPills");
+  el.innerHTML = "";
+  CATS.forEach(c => {
+    const p = document.createElement("div");
+    p.className = "pill" + (activeCat === c.key ? " active" : "");
+    p.textContent = c.label;
+    p.onclick = () => { activeCat = c.key; renderPills(); renderFoods(); };
+    el.appendChild(p);
+  });
+}
+
+function renderFoods(){
+  const tbody = document.getElementById("foodRows");
+  tbody.innerHTML = "";
+  const filtered = FOODS.filter(f =>
+    (activeCat === "all" || f.cat === activeCat) &&
+    foodMatchesQuery(f.name, f.aliases, searchTerm)
+  );
+  document.getElementById("noResults").style.display = filtered.length ? "none" : "block";
+
+  filtered.forEach((f, idx) => {
+    const tr = document.createElement("tr");
+    const pct = Math.max(4, Math.round((f.fid / maxFid) * 100));
+    tr.innerHTML = `
+      <td class="food-name">${f.name}${f.est ? " <span style='color:var(--ink-soft);font-weight:400;'>†</span>" : ""}${f.free ? " <span style='color:var(--primary);font-weight:400;'>‡</span>" : ""}</td>
+      <td class="qty">${f.qty}</td>
+      <td>
+        <div class="fid-cell ${fidClass(f.fid)}">
+          <div class="fid-num">${f.fid}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+        </div>
+      </td>
+      <td><button class="add-btn" data-name="${f.name.replace(/"/g,'&quot;')}">+ Add</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll(".add-btn").forEach(btn => {
+    btn.onclick = () => {
+      const food = FOODS.find(f => f.name === btn.dataset.name);
+      addToTally(food);
+    };
+  });
+}
+
+function addToTally(food){
+  tally.push({...food, tid: Date.now() + Math.random()});
+  renderTally();
+  saveTally();
+}
+
+function removeFromTally(tid){
+  tally = tally.filter(t => t.tid !== tid);
+  renderTally();
+  saveTally();
+}
+
+function renderTally(){
+  const list = document.getElementById("tallyList");
+  list.innerHTML = "";
+  if(tally.length === 0){
+    list.innerHTML = `<div class="empty-note">Nothing added yet — search the guide and tap "+ Add".</div>`;
+  } else {
+    tally.forEach(item => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <div>
+          <div class="l">${item.name}</div>
+          <div class="q">${item.qty}</div>
+        </div>
+        <div class="r">
+          <span style="font-family:'Newsreader',serif; font-weight:600; font-size:15px;">${item.fid}</span>
+          <button class="remove-x" title="Remove">✕</button>
+        </div>
+      `;
+      li.querySelector(".remove-x").onclick = () => removeFromTally(item.tid);
+      list.appendChild(li);
+    });
+  }
+  const total = tally.reduce((sum, t) => sum + t.fid, 0);
+  document.getElementById("tallyTotal").textContent = total;
+  updateBudget(total);
+}
+
+function updateBudget(total){
+  const budget = parseFloat(document.getElementById("budgetInput").value);
+  const fill = document.getElementById("budgetFill");
+  const status = document.getElementById("budgetStatus");
+  if(!budget || budget <= 0){
+    fill.style.width = "0%";
+    fill.classList.remove("over");
+    status.textContent = "";
+    return;
+  }
+  const pct = Math.min(100, Math.round((total / budget) * 100));
+  fill.style.width = pct + "%";
+  if(total > budget){
+    fill.classList.add("over");
+    status.textContent = `${total} of ${budget} — ${total - budget} over target`;
+  } else {
+    fill.classList.remove("over");
+    status.textContent = `${total} of ${budget} — ${budget - total} remaining`;
+  }
+}
+
+// --- Recipes: sum ingredient FIDs (the booklet's own method for home-made meals),
+// then divide by servings for a per-serving estimate. Saved recipes can be tallied
+// as a single serving without re-adding every ingredient. ---
+let recipeIngredients = [];
+let recipes = [];
+let selectedRecipeIngredientFood = null;
+
+const recipeIngredientSearch = document.getElementById("recipeIngredientSearch");
+const recipeIngredientSuggestions = document.getElementById("recipeIngredientSuggestions");
+const recipeWeightRow = document.getElementById("recipeWeightRow");
+const recipeIngredientWeight = document.getElementById("recipeIngredientWeight");
+
+function renderRecipeIngredientSuggestions(query){
+  const q = query.trim().toLowerCase();
+  if (!q){
+    recipeIngredientSuggestions.style.display = "none";
+    recipeIngredientSuggestions.innerHTML = "";
+    return;
+  }
+  const matches = FOODS.filter(f => foodMatchesQuery(f.name, f.aliases, query)).slice(0, 8);
+  if (!matches.length){
+    recipeIngredientSuggestions.innerHTML = `<div class="food-suggestion" style="cursor:default; color:var(--ink-soft); font-style:italic;">No foods match "${query}"</div>`;
+    recipeIngredientSuggestions.style.display = "block";
+    return;
+  }
+  recipeIngredientSuggestions.innerHTML = matches.map(f => `
+    <div class="food-suggestion" data-idx="${FOODS.indexOf(f)}">
+      <span>${f.name}</span>
+      <span class="fs-meta">${f.qty} · ${f.fid} FID</span>
+    </div>
+  `).join("");
+  recipeIngredientSuggestions.style.display = "block";
+}
+
+function selectRecipeIngredientFood(food){
+  selectedRecipeIngredientFood = food;
+  recipeIngredientSearch.value = food.name;
+  recipeIngredientSuggestions.style.display = "none";
+  recipeIngredientSuggestions.innerHTML = "";
+  recipeWeightRow.style.display = "grid";
+  recipeIngredientWeight.value = food.gramWeight || "";
+  recipeIngredientWeight.focus();
+}
+
+recipeIngredientSearch.addEventListener("input", () => {
+  selectedRecipeIngredientFood = null;
+  recipeWeightRow.style.display = "none";
+  renderRecipeIngredientSuggestions(recipeIngredientSearch.value);
+});
+recipeIngredientSearch.addEventListener("focus", () => {
+  if (recipeIngredientSearch.value.trim() && !selectedRecipeIngredientFood) renderRecipeIngredientSuggestions(recipeIngredientSearch.value);
+});
+recipeIngredientSuggestions.addEventListener("mousedown", e => {
+  const item = e.target.closest(".food-suggestion[data-idx]");
+  if (!item) return;
+  e.preventDefault();
+  selectRecipeIngredientFood(FOODS[parseInt(item.dataset.idx, 10)]);
+});
+recipeIngredientSearch.addEventListener("keydown", e => {
+  if (e.key === "Escape"){
+    recipeIngredientSuggestions.style.display = "none";
+  } else if (e.key === "Enter"){
+    const first = recipeIngredientSuggestions.querySelector(".food-suggestion[data-idx]");
+    if (first){
+      e.preventDefault();
+      selectRecipeIngredientFood(FOODS[parseInt(first.dataset.idx, 10)]);
+    }
+  }
+});
+document.addEventListener("click", e => {
+  if (!recipeIngredientSearch.contains(e.target) && !recipeIngredientSuggestions.contains(e.target)){
+    recipeIngredientSuggestions.style.display = "none";
+  }
+});
+
+document.getElementById("addRecipeIngredientBtn").addEventListener("click", () => {
+  if (!selectedRecipeIngredientFood) return;
+  const food = selectedRecipeIngredientFood;
+  const weight = parseFloat(recipeIngredientWeight.value);
+  let fid = food.fid;
+  let qtyLabel = food.qty;
+  if (food.gramWeight && weight > 0){
+    fid = Math.round((food.fid * (weight / food.gramWeight)) * 10) / 10;
+    qtyLabel = `${weight}g`;
+  }
+  recipeIngredients.push({iid: Date.now() + Math.random(), name: food.name, qty: qtyLabel, fid});
+  recipeIngredientSearch.value = "";
+  recipeWeightRow.style.display = "none";
+  selectedRecipeIngredientFood = null;
+  renderRecipeIngredients();
+});
+
+const toggleManualIngredientBtn = document.getElementById("toggleManualIngredient");
+const recipeManualRow = document.getElementById("recipeManualRow");
+const addManualIngredientBtn = document.getElementById("addManualIngredientBtn");
+toggleManualIngredientBtn.addEventListener("click", () => {
+  const showing = recipeManualRow.style.display === "grid";
+  recipeManualRow.style.display = showing ? "none" : "grid";
+  addManualIngredientBtn.style.display = showing ? "none" : "block";
+});
+addManualIngredientBtn.addEventListener("click", () => {
+  const name = document.getElementById("recipeManualName").value.trim();
+  const fid = parseFloat(document.getElementById("recipeManualFid").value);
+  if (!name || isNaN(fid)) return;
+  recipeIngredients.push({iid: Date.now() + Math.random(), name, qty: "manual entry", fid});
+  document.getElementById("recipeManualName").value = "";
+  document.getElementById("recipeManualFid").value = "";
+  renderRecipeIngredients();
+});
+
+function removeRecipeIngredient(iid){
+  recipeIngredients = recipeIngredients.filter(i => i.iid !== iid);
+  renderRecipeIngredients();
+}
+
+function renderRecipeIngredients(){
+  const list = document.getElementById("recipeIngredientList");
+  list.innerHTML = "";
+  if (recipeIngredients.length === 0){
+    list.innerHTML = `<div class="empty-note">No ingredients yet — search above and add a few.</div>`;
+  } else {
+    recipeIngredients.forEach(item => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <div>
+          <div class="l">${item.name}</div>
+          <div class="q">${item.qty}</div>
+        </div>
+        <div class="r">
+          <span style="font-family:'Newsreader',serif; font-weight:600; font-size:15px;">${item.fid}</span>
+          <button class="remove-x" title="Remove">✕</button>
+        </div>
+      `;
+      li.querySelector(".remove-x").onclick = () => removeRecipeIngredient(item.iid);
+      list.appendChild(li);
+    });
+  }
+  const total = recipeIngredients.reduce((sum, i) => sum + i.fid, 0);
+  document.getElementById("recipeTotalFid").textContent = Math.round(total * 10) / 10;
+  updateRecipePerServing();
+}
+
+function updateRecipePerServing(){
+  const total = recipeIngredients.reduce((sum, i) => sum + i.fid, 0);
+  const servings = parseFloat(document.getElementById("recipeServings").value) || 1;
+  const perServing = Math.round((total / servings) * 10) / 10;
+  document.getElementById("recipePerServing").textContent = perServing;
+}
+document.getElementById("recipeServings").addEventListener("input", updateRecipePerServing);
+document.getElementById("togglePlateGuide").addEventListener("click", () => {
+  const guide = document.getElementById("plateGuide");
+  guide.style.display = guide.style.display === "block" ? "none" : "block";
+});
+
+document.getElementById("saveRecipeBtn").addEventListener("click", () => {
+  const name = document.getElementById("recipeName").value.trim();
+  const servings = parseFloat(document.getElementById("recipeServings").value) || 1;
+  if (!name || recipeIngredients.length === 0) return;
+  const totalFid = Math.round(recipeIngredients.reduce((sum, i) => sum + i.fid, 0) * 10) / 10;
+  recipes.push({
+    rid: Date.now() + Math.random(),
+    name,
+    servings,
+    ingredients: recipeIngredients.map(({iid, ...rest}) => rest),
+    totalFid,
+  });
+  document.getElementById("recipeName").value = "";
+  document.getElementById("recipeServings").value = 1;
+  recipeIngredients = [];
+  renderRecipeIngredients();
+  renderSavedRecipes();
+  saveRecipes();
+});
+
+function deleteRecipe(rid){
+  recipes = recipes.filter(r => r.rid !== rid);
+  renderSavedRecipes();
+  saveRecipes();
+}
+
+function addRecipeServingToTally(rid){
+  const recipe = recipes.find(r => r.rid === rid);
+  if (!recipe) return;
+  const perServing = Math.round((recipe.totalFid / recipe.servings) * 10) / 10;
+  tally.push({
+    name: `${recipe.name} (1 serving)`,
+    qty: `1 of ${recipe.servings} servings`,
+    fid: perServing,
+    tid: Date.now() + Math.random(),
+  });
+  renderTally();
+  saveTally();
+}
+
+let expandedRecipeIds = new Set();
+
+function renderSavedRecipes(){
+  const wrap = document.getElementById("savedRecipesList");
+  if (recipes.length === 0){
+    wrap.innerHTML = "";
+    return;
+  }
+  wrap.innerHTML = `<div class="card-title" style="font-size:15px; margin-bottom:4px;">Saved recipes</div>` +
+    recipes.map(r => {
+      const perServing = Math.round((r.totalFid / r.servings) * 10) / 10;
+      const isExpanded = expandedRecipeIds.has(r.rid);
+      const ingredientRows = r.ingredients.map(i => `<li><span>${i.name} (${i.qty})</span><span>${i.fid} FID</span></li>`).join("");
+      return `
+        <div class="recipe-card" data-rid="${r.rid}">
+          <div class="recipe-card-top">
+            <div>
+              <div class="recipe-card-name">${r.name}</div>
+              <div class="recipe-card-meta">${r.servings} serving${r.servings === 1 ? "" : "s"} · ${r.totalFid} FID total</div>
+            </div>
+            <div class="recipe-card-fid">${perServing}<span class="u">FID / serving</span></div>
+          </div>
+          <button class="clear-btn recipe-toggle-ingredients" style="margin-top:10px;">${isExpanded ? "Hide ingredients ▴" : `Show ${r.ingredients.length} ingredient${r.ingredients.length === 1 ? "" : "s"} ▾`}</button>
+          <ul class="recipe-card-ingredients" style="display:${isExpanded ? "block" : "none"};">${ingredientRows}</ul>
+          <div class="recipe-card-actions">
+            <button class="add-btn recipe-add-tally">+ Add 1 serving to Tally</button>
+            <button class="clear-btn recipe-delete">Delete</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  wrap.querySelectorAll(".recipe-toggle-ingredients").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const rid = parseFloat(btn.closest(".recipe-card").dataset.rid);
+      if (expandedRecipeIds.has(rid)) expandedRecipeIds.delete(rid);
+      else expandedRecipeIds.add(rid);
+      renderSavedRecipes();
+    });
+  });
+  wrap.querySelectorAll(".recipe-add-tally").forEach(btn => {
+    btn.addEventListener("click", () => addRecipeServingToTally(parseFloat(btn.closest(".recipe-card").dataset.rid)));
+  });
+  wrap.querySelectorAll(".recipe-delete").forEach(btn => {
+    btn.addEventListener("click", () => deleteRecipe(parseFloat(btn.closest(".recipe-card").dataset.rid)));
+  });
+}
+
+async function saveRecipes(){
+  await storageSet('fid-recipes', JSON.stringify(recipes));
+}
+
+async function loadRecipes(){
+  const value = await storageGet('fid-recipes');
+  if (value){
+    try{ recipes = JSON.parse(value); } catch(e){ /* corrupt or empty saved value, keep recipes as-is */ }
+  }
+  renderSavedRecipes();
+}
+
+function calcFid(){
+  const cal = parseFloat(document.getElementById("calCalories").value) || 0;
+  const fii = parseFloat(document.getElementById("calFII").value) || 0;
+  const result = Math.round((cal * fii / 239) * 10) / 10;
+  document.getElementById("calResult").textContent = result;
+}
+
+// --- Closest-match FID estimator (nearest neighbor by macro % of calories) ---
+function macroPct(carb, protein, fat){
+  const cCal = carb * 4, pCal = protein * 4, fCal = fat * 9;
+  const total = cCal + pCal + fCal;
+  if (total <= 0) return {c:0, p:0, f:0};
+  return {c: cCal/total*100, p: pCal/total*100, f: fCal/total*100};
+}
+FOODS.forEach(f => { f.pct = macroPct(f.carb, f.protein, f.fat); });
+
+// Weight (g) of the portion each food's carb/protein/fat/cal fields describe, parsed
+// from `qty`. Where `qty` states two weights (e.g. "95g tin, drained (80g)") the LAST
+// one is the weight the macros were actually estimated for. A few foods state a count
+// or cup measure with no weight at all ("2 large", "1 cup") — those are hand-filled
+// below using typical USDA weights, since the FID they're tested against a specific
+// real portion, not an open-ended "cup".
+const GRAM_WEIGHT_OVERRIDES = {
+  "Berries": 150,
+  "Leafy Green Vegetables": 30,
+  "Navy Beans": 170,
+  "Poached Eggs": 100,
+};
+function parseGramWeight(food){
+  if (GRAM_WEIGHT_OVERRIDES[food.name] != null) return GRAM_WEIGHT_OVERRIDES[food.name];
+  const matches = [...food.qty.matchAll(/([\d.]+)\s*(g|gram|mL|ml)\b/gi)];
+  if (!matches.length) return null;
+  return parseFloat(matches[matches.length - 1][1]);
+}
+FOODS.forEach(f => { f.gramWeight = parseGramWeight(f); });
+
+function calcMatch(){
+  const carb = parseFloat(document.getElementById("matchCarb").value) || 0;
+  const protein = parseFloat(document.getElementById("matchProtein").value) || 0;
+  const fat = parseFloat(document.getElementById("matchFat").value) || 0;
+  let cal = parseFloat(document.getElementById("matchCalories").value);
+
+  if (isNaN(cal) || cal === 0){
+    cal = Math.round(carb * 4 + protein * 4 + fat * 9);
+    if (cal > 0) document.getElementById("matchCalories").value = cal;
+  }
+
+  const results = document.getElementById("matchResults");
+  if (!cal || cal <= 0){
+    results.innerHTML = `<div class="match-empty">Enter at least one macro to find similar foods.</div>`;
+    return;
+  }
+
+  const userPct = macroPct(carb, protein, fat);
+  const ranked = FOODS.map(f => {
+    const d = Math.sqrt(
+      Math.pow(f.pct.c - userPct.c, 2) +
+      Math.pow(f.pct.p - userPct.p, 2) +
+      Math.pow(f.pct.f - userPct.f, 2)
+    );
+    const estFid = Math.round((cal * f.fid / f.cal) * 10) / 10;
+    const similarity = Math.max(0, Math.round(100 - d / 1.73));
+    return {...f, distance: d, estFid, similarity};
+  }).sort((a, b) => a.distance - b.distance).slice(0, 3);
+
+  results.innerHTML = ranked.map((f, i) => `
+    <div class="match-card ${i === 0 ? 'best' : ''}">
+      <div>
+        <div class="match-name">${f.name}${i === 0 ? ' — closest match' : ''}</div>
+        <div class="match-meta">Tested: ${f.fid} FID per ${f.qty} (${f.cal} cal)</div>
+        <div class="match-sim">${f.similarity}% macro similarity</div>
+      </div>
+      <div class="match-fid">${f.estFid}<span class="u">est. FID</span></div>
+    </div>
+  `).join("");
+}
+
+["matchCarb","matchProtein","matchFat","matchCalories"].forEach(id => {
+  document.getElementById(id).addEventListener("input", calcMatch);
+});
+calcMatch();
+
+// --- Unified search: one box routes to either the tested-ledger macro estimate
+// or the Insulin Index reference estimate, depending on which list the food is in ---
+const findFoodNameInput = document.getElementById("findFoodName");
+const findFoodSuggestions = document.getElementById("findFoodSuggestions");
+const fiiFoodNote = document.getElementById("fiiFoodNote");
+
+function renderFindSuggestions(query){
+  const q = query.trim();
+  if (!q){
+    findFoodSuggestions.style.display = "none";
+    findFoodSuggestions.innerHTML = "";
+    findFoodSuggestions._matches = [];
+    return;
+  }
+  const ledgerMatches = FOODS.filter(f => foodMatchesQuery(f.name, f.aliases, q)).map(food => ({type:"ledger", food}));
+  const refMatches = INSULIN_INDEX_REF.filter(f => foodMatchesQuery(f.name, f.aliases, q)).map(food => ({type:"ref", food}));
+  const combined = [...ledgerMatches, ...refMatches].slice(0, 8);
+  findFoodSuggestions._matches = combined;
+  if (!combined.length){
+    findFoodSuggestions.innerHTML = `<div class="food-suggestion" style="cursor:default; color:var(--ink-soft); font-style:italic;">No foods match "${query}"</div>`;
+    findFoodSuggestions.style.display = "block";
+    return;
+  }
+  findFoodSuggestions.innerHTML = combined.map((m, i) => {
+    const tag = m.type === "ledger" ? "TESTED" : "REFERENCE";
+    const value = m.type === "ledger" ? `${m.food.fid} FID` : `II ≈ ${m.food.ii}`;
+    return `
+    <div class="food-suggestion" data-i="${i}">
+      <span>${m.food.name}</span>
+      <span class="fs-meta">${tag} · ${value}</span>
+    </div>`;
+  }).join("");
+  findFoodSuggestions.style.display = "block";
+}
+
+let selectedLedgerFood = null;
+const matchWeightField = document.getElementById("matchWeightField");
+const matchWeightInput = document.getElementById("matchWeight");
+const matchWeightNote = document.getElementById("matchWeightNote");
+
+function applyFoodSuggestion(food){
+  selectedLedgerFood = food;
+  document.getElementById("matchCarb").value = food.carb;
+  document.getElementById("matchProtein").value = food.protein;
+  document.getElementById("matchFat").value = food.fat;
+  document.getElementById("matchCalories").value = food.cal;
+  matchWeightField.style.display = "block";
+  if (food.gramWeight){
+    matchWeightInput.disabled = false;
+    matchWeightInput.value = food.gramWeight;
+    matchWeightNote.textContent = `Guide portion: ${food.qty}`;
+  } else {
+    matchWeightInput.disabled = true;
+    matchWeightInput.value = "";
+    matchWeightNote.textContent = `No gram weight available for this food's stated portion (${food.qty}) — adjust the macros below directly.`;
+  }
+  calcMatch();
+}
+
+function applyMatchWeight(){
+  const weight = parseFloat(matchWeightInput.value);
+  if (!selectedLedgerFood || !selectedLedgerFood.gramWeight || !weight || weight <= 0) return;
+  const ratio = weight / selectedLedgerFood.gramWeight;
+  const round1 = n => Math.round(n * 10) / 10;
+  document.getElementById("matchCarb").value = round1(selectedLedgerFood.carb * ratio);
+  document.getElementById("matchProtein").value = round1(selectedLedgerFood.protein * ratio);
+  document.getElementById("matchFat").value = round1(selectedLedgerFood.fat * ratio);
+  document.getElementById("matchCalories").value = Math.round(selectedLedgerFood.cal * ratio);
+  calcMatch();
+}
+matchWeightInput.addEventListener("input", applyMatchWeight);
+
+function applyFiiSuggestion(food){
+  document.getElementById("calFII").value = food.ii;
+  if (food.note){
+    fiiFoodNote.textContent = `Note: ${food.note}`;
+    fiiFoodNote.style.display = "block";
+  } else {
+    fiiFoodNote.style.display = "none";
+  }
+  calcFid();
+}
+
+// Each search pick only fills in one section (macro-based or known-FII); the other
+// section is reset so it doesn't keep showing results from a previous, unrelated food.
+function resetMacroSection(){
+  selectedLedgerFood = null;
+  document.getElementById("matchCarb").value = "";
+  document.getElementById("matchProtein").value = "";
+  document.getElementById("matchFat").value = "";
+  document.getElementById("matchCalories").value = "";
+  matchWeightField.style.display = "none";
+  matchWeightInput.value = "";
+  calcMatch();
+}
+
+function resetFiiSection(){
+  document.getElementById("calFII").value = "";
+  fiiFoodNote.style.display = "none";
+  calcFid();
+}
+
+function applyFindSuggestion(match){
+  if (match.type === "ledger"){
+    applyFoodSuggestion(match.food);
+    resetFiiSection();
+  } else {
+    resetMacroSection();
+    applyFiiSuggestion(match.food);
+  }
+  findFoodNameInput.value = match.food.name;
+  findFoodSuggestions.style.display = "none";
+  findFoodSuggestions.innerHTML = "";
+}
+
+findFoodNameInput.addEventListener("input", () => renderFindSuggestions(findFoodNameInput.value));
+findFoodNameInput.addEventListener("focus", () => {
+  if (findFoodNameInput.value.trim()) renderFindSuggestions(findFoodNameInput.value);
+});
+findFoodSuggestions.addEventListener("mousedown", e => {
+  const item = e.target.closest(".food-suggestion[data-i]");
+  if (!item) return;
+  e.preventDefault();
+  const matches = findFoodSuggestions._matches || [];
+  applyFindSuggestion(matches[parseInt(item.dataset.i, 10)]);
+});
+findFoodNameInput.addEventListener("keydown", e => {
+  if (e.key === "Escape"){
+    findFoodSuggestions.style.display = "none";
+  } else if (e.key === "Enter"){
+    const matches = findFoodSuggestions._matches || [];
+    if (matches.length){
+      e.preventDefault();
+      applyFindSuggestion(matches[0]);
+    }
+  }
+});
+document.addEventListener("click", e => {
+  if (!findFoodNameInput.contains(e.target) && !findFoodSuggestions.contains(e.target)){
+    findFoodSuggestions.style.display = "none";
+  }
+});
+
+// FII ≈ 10.4 + 1.0*carb(g/1000kJ) + 0.4*protein(g/1000kJ)  — Bell et al. 2016, Nutrients
+function calcMacroFid(){
+  const carb = parseFloat(document.getElementById("macroCarb").value) || 0;
+  const protein = parseFloat(document.getElementById("macroProtein").value) || 0;
+  const fat = parseFloat(document.getElementById("macroFat").value) || 0;
+  let cal = parseFloat(document.getElementById("macroCalories").value);
+
+  if (isNaN(cal) || cal === 0){
+    cal = Math.round(carb * 4 + protein * 4 + fat * 9);
+    if (cal > 0) document.getElementById("macroCalories").value = cal;
+  }
+
+  const sub = document.getElementById("macroFIIsub");
+  const flag = document.getElementById("macroConfidence");
+
+  if (!cal || cal <= 0){
+    document.getElementById("macroResult").textContent = "0";
+    sub.textContent = "";
+    flag.style.display = "none";
+    return;
+  }
+
+  const scale = 239 / cal;
+  const carbScaled = carb * scale;
+  const proteinScaled = protein * scale;
+  const fii = Math.max(0, 10.4 + 1.0 * carbScaled + 0.4 * proteinScaled);
+  const fid = Math.round((cal * fii / 239) * 10) / 10;
+
+  document.getElementById("macroResult").textContent = fid;
+  sub.textContent = `(est. FII ≈ ${Math.round(fii)})`;
+
+  const fatCalPct = (fat * 9) / cal * 100;
+  if (fatCalPct >= 55){
+    flag.className = "confidence-flag warn";
+    flag.style.display = "block";
+    flag.innerHTML = `<strong>Likely overestimate.</strong> ${Math.round(fatCalPct)}% of this food's calories are fat, and fat isn't in this equation — for foods like nuts, oils, and fatty cuts of meat, the real FID tends to run well below this number. Check the Food Insulin Demand Guide or a tested source first.`;
+  } else if (fatCalPct >= 35){
+    flag.className = "confidence-flag caution";
+    flag.style.display = "block";
+    flag.innerHTML = `<strong>Moderate confidence.</strong> ${Math.round(fatCalPct)}% of calories are fat, which this equation doesn't account for — treat this as an upper-bound estimate.`;
+  } else {
+    flag.style.display = "none";
+  }
+}
+
+function setupTabs(){
+  const tabs = [
+    {btn: document.getElementById("tabFind"), pane: document.getElementById("paneFind")},
+    {btn: document.getElementById("tabMacro"), pane: document.getElementById("paneMacro")},
+  ];
+  tabs.forEach(t => {
+    t.btn.addEventListener("click", () => {
+      tabs.forEach(other => {
+        other.btn.classList.toggle("active", other === t);
+        other.pane.style.display = other === t ? "block" : "none";
+      });
+    });
+  });
+}
+setupTabs();
+
+["macroCarb","macroProtein","macroFat","macroCalories"].forEach(id => {
+  document.getElementById(id).addEventListener("input", calcMacroFid);
+});
+
+async function saveTally(){
+  await storageSet('fid-tally', JSON.stringify(tally.map(({tid, ...rest}) => rest)));
+}
+
+async function loadTally(){
+  const value = await storageGet('fid-tally');
+  if (value){
+    try{
+      const items = JSON.parse(value);
+      tally = items.map(item => ({...item, tid: Date.now() + Math.random()}));
+    } catch(e){ /* corrupt or empty saved value, keep tally as-is */ }
+  }
+  renderTally();
+}
+
+document.getElementById("search").addEventListener("input", e => {
+  searchTerm = e.target.value;
+  renderFoods();
+});
+document.getElementById("budgetInput").addEventListener("input", () => {
+  const total = tally.reduce((sum, t) => sum + t.fid, 0);
+  updateBudget(total);
+});
+document.getElementById("toggleInsulinTargets").addEventListener("click", () => {
+  const guide = document.getElementById("insulinTargetsGuide");
+  guide.style.display = guide.style.display === "block" ? "none" : "block";
+});
+document.getElementById("clearTally").addEventListener("click", () => {
+  tally = [];
+  renderTally();
+  saveTally();
+});
+document.getElementById("calCalories").addEventListener("input", calcFid);
+document.getElementById("calFII").addEventListener("input", calcFid);
+
+// --- Collapsible cards: every card on the page (Food Guide, Estimate, Recipes,
+// Today's Tally) can be independently collapsed, defaults to collapsed on first
+// visit, and remembers its state via storageSet/storageGet. This keeps the page
+// compact by default, especially on narrow/mobile screens. Cards stay in a fixed
+// DOM order (Guide, Estimate, Recipes, Tally) regardless of collapse state. ---
+function setupCollapsibleCard(key, toggleId, bodyId, noteId, onChange){
+  const btn = document.getElementById(toggleId);
+  const body = document.getElementById(bodyId);
+  const note = document.getElementById(noteId);
+  let collapsed = true; // default collapsed for every card
+
+  function apply(){
+    body.style.display = collapsed ? "none" : "block";
+    note.style.display = collapsed ? "block" : "none";
+    btn.textContent = collapsed ? "Expand ▸" : "Collapse ▾";
+    if (onChange) onChange(collapsed);
+  }
+
+  function setCollapsed(next, persist){
+    collapsed = next;
+    apply();
+    if (persist) storageSet(key, JSON.stringify(collapsed));
+  }
+
+  btn.addEventListener("click", () => setCollapsed(!collapsed, true));
+
+  apply();
+
+  storageGet(key).then(value => {
+    if (value !== null){
+      try{ setCollapsed(JSON.parse(value), false); } catch(e){ /* ignore corrupt saved value */ }
+    }
+  });
+}
+
+// While the Guide is collapsed, drop the 2-column desktop grid down to a single
+// column so "Estimate a Food's FID" stacks directly under it instead of leaving
+// a tall empty gap in the Guide's column when Estimate is expanded.
+const foodGrid = document.querySelector(".grid");
+setupCollapsibleCard('fid-ledger-collapsed', 'toggleLedger', 'ledgerCollapsible', 'ledgerCollapsedNote', (collapsed) => {
+  foodGrid.classList.toggle("guide-collapsed", collapsed);
+});
+setupCollapsibleCard('fid-estimate-collapsed', 'toggleEstimate', 'estimateCollapsible', 'estimateCollapsedNote');
+setupCollapsibleCard('fid-recipes-collapsed', 'toggleRecipes', 'recipesCollapsible', 'recipesCollapsedNote');
+setupCollapsibleCard('fid-tally-collapsed', 'toggleTally', 'tallyCollapsible', 'tallyCollapsedNote');
+
+renderPills();
+renderFoods();
+renderRecipeIngredients();
+loadTally();
+loadRecipes();
+</script>
+</body>
+</html>
