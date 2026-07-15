@@ -297,9 +297,10 @@
     font-family:'Nunito Sans', sans-serif; font-size:11px; font-weight:700; letter-spacing:0.03em;
     text-transform:uppercase; color:var(--primary); margin-top:3px;
   }
+  .match-fid-col{display:flex; flex-direction:column; align-items:flex-end; gap:8px; padding-left:14px;}
   .match-fid{
     font-family:'Newsreader', serif; font-size:28px; font-weight:600; color:var(--primary);
-    text-align:right; white-space:nowrap; padding-left:14px;
+    text-align:right; white-space:nowrap;
   }
   .match-fid .u{font-family:'Nunito Sans', sans-serif; font-size:10px; font-weight:700; color:var(--ink-soft); display:block; text-transform:uppercase;}
   .match-empty{color:var(--ink-soft); font-size:13px; font-style:italic; padding:12px 0;}
@@ -485,6 +486,7 @@
               <div class="calc-result">
                 <div class="num" id="calResult">0</div>
                 <div class="cap">Estimated FID</div>
+                <button class="add-btn" id="addCalToTally" style="margin-top:10px; display:none;">+ Add to today's tally</button>
               </div>
               <div class="formula-note">
                 FID = calories × FII ÷ 239<br>
@@ -500,6 +502,10 @@
 
           <!-- MODE 2: macros only -->
           <div id="paneMacro" class="calc-pane" style="display:none;">
+            <div class="field" style="margin-bottom:14px;">
+              <label for="macroFoodName">Food name <span style="font-weight:400;">(optional, for your tally)</span></label>
+              <input type="text" id="macroFoodName" placeholder="e.g. Homemade granola bar">
+            </div>
             <div class="calc-grid">
               <div class="field">
                 <label for="macroCarb">Carbohydrate (g)</label>
@@ -521,6 +527,7 @@
             <div class="calc-result">
               <div class="num" id="macroResult">0</div>
               <div class="cap">Estimated FID <span id="macroFIIsub"></span></div>
+              <button class="add-btn" id="addMacroToTally" style="margin-top:10px; display:none;">+ Add to today's tally</button>
             </div>
             <div id="macroConfidence" class="confidence-flag" style="display:none;"></div>
             <div class="formula-note">
@@ -1138,6 +1145,15 @@ function renderFoods(){
   });
 }
 
+// Brief "Added ✓" confirmation on an Add-to-tally button, since these live outside
+// the main table and don't have another obvious signal that the click registered.
+function flashAdded(btn){
+  const original = btn.textContent;
+  btn.textContent = "Added ✓";
+  btn.disabled = true;
+  setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 1200);
+}
+
 function addToTally(food){
   tally.push({...food, tid: Date.now() + Math.random()});
   renderTally();
@@ -1456,7 +1472,18 @@ function calcFid(){
   const fii = parseFloat(document.getElementById("calFII").value) || 0;
   const result = Math.round((cal * fii / 239) * 10) / 10;
   document.getElementById("calResult").textContent = result;
+  document.getElementById("addCalToTally").style.display = (cal > 0 && fii > 0) ? "inline-block" : "none";
 }
+
+document.getElementById("addCalToTally").addEventListener("click", (e) => {
+  const cal = parseFloat(document.getElementById("calCalories").value) || 0;
+  const fii = parseFloat(document.getElementById("calFII").value) || 0;
+  const fid = Math.round((cal * fii / 239) * 10) / 10;
+  if (!cal || !fii) return;
+  const name = findFoodNameInput.value.trim() || "Estimated food";
+  addToTally({name, qty: `${cal} cal (est. via known FII)`, fid});
+  flashAdded(e.currentTarget);
+});
 
 // --- Closest-match FID estimator (nearest neighbor by macro % of calories) ---
 function macroPct(carb, protein, fat){
@@ -1523,9 +1550,21 @@ function calcMatch(){
         <div class="match-meta">Tested: ${f.fid} FID per ${f.qty} (${f.cal} cal)</div>
         <div class="match-sim">${f.similarity}% macro similarity</div>
       </div>
-      <div class="match-fid">${f.estFid}<span class="u">est. FID</span></div>
+      <div class="match-fid-col">
+        <div class="match-fid">${f.estFid}<span class="u">est. FID</span></div>
+        <button class="add-btn match-add-btn" data-i="${i}">+ Add</button>
+      </div>
     </div>
   `).join("");
+
+  results.querySelectorAll(".match-add-btn").forEach(btn => {
+    btn.onclick = () => {
+      const f = ranked[parseInt(btn.dataset.i, 10)];
+      const name = findFoodNameInput.value.trim() || f.name;
+      addToTally({name, qty: `${cal} cal (est., closest match: ${f.name})`, fid: f.estFid});
+      flashAdded(btn);
+    };
+  });
 }
 
 ["matchCarb","matchProtein","matchFat","matchCalories"].forEach(id => {
@@ -1715,6 +1754,7 @@ function calcMacroFid(){
     document.getElementById("macroResult").textContent = "0";
     sub.textContent = "";
     flag.style.display = "none";
+    document.getElementById("addMacroToTally").style.display = "none";
     return;
   }
 
@@ -1726,6 +1766,7 @@ function calcMacroFid(){
 
   document.getElementById("macroResult").textContent = fid;
   sub.textContent = `(est. FII ≈ ${Math.round(fii)})`;
+  document.getElementById("addMacroToTally").style.display = "inline-block";
 
   const fatCalPct = (fat * 9) / cal * 100;
   if (fatCalPct >= 55){
@@ -1740,6 +1781,15 @@ function calcMacroFid(){
     flag.style.display = "none";
   }
 }
+
+document.getElementById("addMacroToTally").addEventListener("click", (e) => {
+  const cal = parseFloat(document.getElementById("macroCalories").value) || 0;
+  const fid = parseFloat(document.getElementById("macroResult").textContent) || 0;
+  if (!cal || !fid) return;
+  const name = document.getElementById("macroFoodName").value.trim() || "Estimated food";
+  addToTally({name, qty: `${cal} cal (est. via macro regression)`, fid});
+  flashAdded(e.currentTarget);
+});
 
 function setupTabs(){
   const tabs = [
