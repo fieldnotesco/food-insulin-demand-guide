@@ -533,7 +533,10 @@
             <div class="formula-note">
               Step 1 — scale carbohydrate &amp; protein to a 239-calorie (1000 kJ) reference portion.<br>
               Step 2 — FII ≈ 10.4 + (1.0 × scaled carb g) + (0.4 × scaled protein g)<br>
-              Step 3 — FID = calories × FII ÷ 239<br><br>
+              Step 3 — FID = calories × FII ÷ 239
+            </div>
+            <button class="clear-btn" id="toggleEquationInfo" style="margin-top:10px;">Learn more about this equation ▸</button>
+            <div id="equationInfo" class="formula-note" style="display:none; margin-top:10px;">
               This is the published equation from <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4848679/" target="_blank" rel="noopener">Bell, Petocz, Colagiuri &amp; Brand-Miller (2016, <em>Nutrients</em>)</a>
               for estimating FII from macros alone — it explains about half the variation in directly-tested
               FII values, using only carbohydrate and protein. Fat is deliberately left out: in their own
@@ -1366,6 +1369,13 @@ document.getElementById("recipeServings").addEventListener("input", updateRecipe
 document.getElementById("togglePlateGuide").addEventListener("click", () => {
   const guide = document.getElementById("plateGuide");
   guide.style.display = guide.style.display === "block" ? "none" : "block";
+});
+
+document.getElementById("toggleEquationInfo").addEventListener("click", (e) => {
+  const info = document.getElementById("equationInfo");
+  const expanded = info.style.display === "block";
+  info.style.display = expanded ? "none" : "block";
+  e.currentTarget.textContent = expanded ? "Learn more about this equation ▸" : "Hide equation details ▾";
 });
 
 document.getElementById("saveRecipeBtn").addEventListener("click", () => {
