@@ -71,8 +71,9 @@ because the Bell booklet doesn't cover them:
    Improve the Prediction of Postprandial Insulinaemia in Response to Common Foods"
 
 Peer-reviewed paper, same University of Sydney research group. Fetched via web search
-during the source chat (PMC4848679). Provides the published regression equation used
-in the "Macro regression" calculator tab:
+during the source chat: `https://pmc.ncbi.nlm.nih.gov/articles/PMC4848679/` (PMC4848679)
+— linked directly from the "Macro regression" calculator tab's formula note. Provides
+the published regression equation used in that tab:
 
 ```
 FII ≈ 10.4 + (1.0 × carbohydrate g, scaled to a 1000kJ/239cal portion)
@@ -90,8 +91,11 @@ See `CALCULATOR_METHODOLOGY.md` for the validation that led to this decision.
 
 `insulin-index-food-list.pdf` — a 14-page, ~140-food "Insulin Index Chart" compiled by
 Foodstruct.com (Victoria Mazmanyan, last updated 2021-09-20), which aggregates Insulin
-Index (II) values from many individual published studies (Holt et al. 1997 AJCN, the
-Bell thesis, and numerous others — each row in the source PDF cites its own study).
+Index (II) values from many individual published studies (Holt et al. 1997 AJCN
+— `https://ajcn.nutrition.org/content/66/5/1264.abstract`, the foundational paper that
+coined "insulin demand," linked from the app's footer as "Dr. Jennie Brand-Miller's
+team" — the Bell thesis, and numerous others — each row in the source PDF cites its
+own study).
 
 **This is kept as a separate lookup, not merged into the `FOODS` ledger**, and is only
 surfaced via the search-by-name field in the "I know the FII" calculator tab
@@ -136,7 +140,10 @@ have to come from a different, food-specific study — not fabricated from this 
 
 `Bell_KJ_thesis_11.pdf` — the full 2014 PhD thesis behind the Bell booklet (Kirstine
 Bell, *Clinical Application of the Food Insulin Index to Diabetes Mellitus*, University
-of Sydney), obtained after `INSULIN_INDEX_REF` was first built. Chapter 3 (`Table 3.1`)
+of Sydney), obtained after `INSULIN_INDEX_REF` was first built. Also openly available
+via the University of Sydney's repository:
+`https://ses.library.usyd.edu.au/handle/2123/11945` — linked from the app (header intro
+and footer citation) so users can go straight to the source. Chapter 3 (`Table 3.1`)
 directly tested 26 single foods for FII, with full macro data, as part of the thesis
 research itself — a primary source, not a secondary compilation like Foodstruct.
 
