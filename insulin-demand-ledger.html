@@ -538,19 +538,10 @@
             <div id="macroConfidence" class="confidence-flag" style="display:none;"></div>
             <button class="clear-btn" id="toggleEquationInfo" style="margin-top:10px;">How is this calculated? ▸</button>
             <div id="equationInfo" class="formula-note" style="display:none; margin-top:10px;">
-              Step 1 — scale carbohydrate &amp; protein to a 239-calorie (1000 kJ) reference portion.<br>
-              Step 2 — FII ≈ 10.4 + (1.0 × scaled carb g) + (0.4 × scaled protein g)<br>
-              Step 3 — FID = calories × FII ÷ 239<br><br>
               This is the published equation from <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4848679/" target="_blank" rel="noopener">Bell, Petocz, Colagiuri &amp; Brand-Miller (2016, <em>Nutrients</em>)</a>
               for estimating FII from macros alone — it explains about half the variation in directly-tested
               FII values, using only carbohydrate and protein. Fat is deliberately left out: in their own
               regression, it wasn't a significant independent predictor once carb and protein were included.
-              We checked this against foods with known values — for walnuts (FII 5, tested), this equation
-              overestimates badly (≈18) because it has no way to discount for very high fat content; for
-              poached eggs (FID 14, tested), it comes much closer (≈12) because protein does most of the
-              work there. There's no simple fat penalty that fixes the walnuts case without breaking the
-              eggs case, so rather than force one in, this calculator flags high-fat foods below instead —
-              treat those results as a ceiling, not a number.
             </div>
           </div>
         </div>
