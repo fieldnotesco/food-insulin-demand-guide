@@ -196,10 +196,6 @@ they don't clutter the UI by default:
   healthy fat, small carb serving prioritizing berries/sweet potato/squash over
   grains) — shown in the Recipes card, since that's where ingredients actually get
   assembled into a meal.
-- **Header pull-quote**, added later directly from the user, attributed to Dr. Fiona
-  McCulloch: "For PCOS, focusing on low insulinemic foods is something we've seen to
-  be helpful clinically." Shown at the top of the page under the intro paragraph, as
-  the clinical rationale for why the whole tool exists.
 
 One thing worth noting for future consistency: the book's own stated method for
 insulin counting — "add up the count of each food in your meal... substitute the most
