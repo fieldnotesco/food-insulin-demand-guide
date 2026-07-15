@@ -210,6 +210,23 @@ and turning a named idea like "Egg Muffins with Prosciutto" into an actual ingre
 list with weights would mean guessing quantities the source doesn't give — the same
 kind of fabrication this project has consistently avoided elsewhere.
 
+## Terminology: PCOS → PMOS
+
+In May 2026, an international expert consensus (56 organizations, 14,300+ survey
+respondents, published in *The Lancet*) renamed PCOS (polycystic ovary syndrome) to
+PMOS (polyendocrine metabolic ovarian syndrome) — the original name was considered
+misleading since ovarian cysts aren't the defining feature and aren't always present.
+ICD adoption is expected by 2028; the app was updated immediately rather than waiting.
+
+Every running-text mention of the condition in the app was changed from PCOS to PMOS
+(the eyebrow tag, the header intro paragraphs). **Exact titles of existing published
+works were left as-is**, since they're direct quotes of works that were actually
+published under the name "PCOS" and changing them would misrepresent the citation:
+Dr. Fiona McCulloch's book *8 Steps to Reverse Your PCOS*, and her article
+"Food Insulin Demand – A Dietary Metric for PCOS and Metabolic Health." If either
+source is ever reprinted/retitled under the new terminology, update the citations to
+match the reprint, not preemptively.
+
 ## Macro data (carb/protein/fat/calories per food) — not from any of the above
 
 **None of the three sources above publish macronutrient breakdowns.** The `carb`,
