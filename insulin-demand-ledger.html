@@ -460,9 +460,12 @@
               </div>
               <div id="matchResults"></div>
               <div class="formula-note">
+                Estimate = your calories × matched food's <em>tested</em> FID ÷ matched food's calories.
+              </div>
+              <button class="clear-btn" id="toggleMatchInfo" style="margin-top:10px;">Learn more about this estimate ▸</button>
+              <div id="matchInfo" class="formula-note" style="display:none; margin-top:10px;">
                 Finds the foods in the guide whose calorie split between carb / protein / fat is closest to yours,
-                then scales that food's <em>tested</em> FID to your portion's calorie count
-                (estimate = your calories × matched food's FID ÷ matched food's calories). This sidesteps
+                then scales that food's tested FID to your portion's calorie count. This sidesteps
                 the fat-blindness of the regression equation, since you're borrowing an actual measured
                 value rather than a formula — but it's still only as good as the match. A food with a similar
                 macro split can still behave differently (fiber, food matrix, processing all matter), so
@@ -489,7 +492,10 @@
                 <button class="add-btn" id="addCalToTally" style="margin-top:10px; display:none;">+ Add to today's tally</button>
               </div>
               <div class="formula-note">
-                FID = calories × FII ÷ 239<br>
+                FID = calories × FII ÷ 239
+              </div>
+              <button class="clear-btn" id="toggleFiiInfo" style="margin-top:10px;">Learn more about this estimate ▸</button>
+              <div id="fiiInfo" class="formula-note" style="display:none; margin-top:10px;">
                 FII is scaled to glucose, referenced to 239 calories (1000 kJ) of the food.
                 This reference is compiled from published studies (Foodstruct.com) — it's a
                 useful ballpark, but it is <em>not</em> the same tested methodology as the
@@ -1040,6 +1046,12 @@ const QUERY_SYNONYMS = {
   almond: ["walnut", "peanut"],
   almonds: ["almond", "walnut", "peanut"],
   shrimp: ["prawn"],
+  spinach: ["leafy green"],
+  kale: ["leafy green"],
+  arugula: ["leafy green"],
+  lettuce: ["leafy green"],
+  romaine: ["leafy green"],
+  cabbage: ["leafy green"],
   quinoa: ["rice", "millet"],
   oatmeal: ["porridge"],
   chickpea: ["bean", "lentil", "hummus"],
@@ -1371,12 +1383,17 @@ document.getElementById("togglePlateGuide").addEventListener("click", () => {
   guide.style.display = guide.style.display === "block" ? "none" : "block";
 });
 
-document.getElementById("toggleEquationInfo").addEventListener("click", (e) => {
-  const info = document.getElementById("equationInfo");
-  const expanded = info.style.display === "block";
-  info.style.display = expanded ? "none" : "block";
-  e.currentTarget.textContent = expanded ? "Learn more about this equation ▸" : "Hide equation details ▾";
-});
+function setupInfoToggle(btnId, infoId, collapsedLabel, expandedLabel){
+  document.getElementById(btnId).addEventListener("click", (e) => {
+    const info = document.getElementById(infoId);
+    const expanded = info.style.display === "block";
+    info.style.display = expanded ? "none" : "block";
+    e.currentTarget.textContent = expanded ? collapsedLabel : expandedLabel;
+  });
+}
+setupInfoToggle("toggleEquationInfo", "equationInfo", "Learn more about this equation ▸", "Hide equation details ▾");
+setupInfoToggle("toggleMatchInfo", "matchInfo", "Learn more about this estimate ▸", "Hide estimate details ▾");
+setupInfoToggle("toggleFiiInfo", "fiiInfo", "Learn more about this estimate ▸", "Hide estimate details ▾");
 
 document.getElementById("saveRecipeBtn").addEventListener("click", () => {
   const name = document.getElementById("recipeName").value.trim();
