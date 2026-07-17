@@ -86,7 +86,7 @@
     overflow-wrap: break-word;
   }
   .card-body{padding: 18px 22px 22px;}
-  .table-scroll{overflow-x:auto;}
+  .table-scroll{overflow-x:auto; max-height:520px; overflow-y:auto;}
 
   input[type=text], input[type=number]{
     font-family:'Nunito Sans', sans-serif;
@@ -131,6 +131,9 @@
     font-weight:700;
     padding: 6px 8px 10px;
     border-bottom:1px solid var(--paper-line);
+    position: sticky;
+    top: 0;
+    background: var(--card);
   }
   tbody tr{border-bottom:1px solid var(--paper-line);}
   tbody tr:last-child{border-bottom:none;}
